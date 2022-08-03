@@ -3,7 +3,6 @@ package com.community_blog.controller;
 
 import com.baomidou.mybatisplus.core.conditions.query.LambdaQueryWrapper;
 import com.baomidou.mybatisplus.extension.plugins.pagination.Page;
-import com.community_blog.common.MyPage;
 import com.community_blog.domain.DiscussPost;
 import com.community_blog.domain.User;
 import com.community_blog.service.IDiscussPostService;
@@ -15,14 +14,13 @@ import org.springframework.ui.Model;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.RequestMapping;
 
-import org.springframework.web.bind.annotation.RequestMethod;
-import org.springframework.web.bind.annotation.RestController;
-
 import java.util.*;
+
+import com.community_blog.common.MyPage;
 
 /**
  * <p>
- * 前端控制器
+ *  前端控制器
  * </p>
  *
  * @author Harry
@@ -99,6 +97,11 @@ public class DiscussPostController {
         model.addAttribute("discussPosts", discussPosts);
         model.addAttribute("page", postPage);
         return "/index";
+    }
+
+    @GetMapping("/register")
+    public String getRegisterPage() {
+        return "/site/register";
     }
 }
 

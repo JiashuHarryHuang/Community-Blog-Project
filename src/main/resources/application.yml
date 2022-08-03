@@ -1,0 +1,22 @@
+spring:
+  application:
+    name: community_blog
+  datasource:
+    druid:
+      driver-class-name: com.mysql.cj.jdbc.Driver
+      url: jdbc:mysql://localhost:3306/community?serverTimezone=Asia/Shanghai&useUnicode=true&characterEncoding=utf-8&zeroDateTimeBehavior=convertToNull&useSSL=false&allowPublicKeyRetrieval=true
+      username: root
+      password: 123456
+  thymeleaf:
+    cache: false
+  mail:
+    host: smtp.sina.com
+    port: 465
+    username: jiashuhuang@sina.com
+    password: e00ef2c2c847e306 #授权码而不是真实密码
+    protocol: smtps
+    properties:
+      mail:
+        smtp:
+          ssl:
+            enable: true

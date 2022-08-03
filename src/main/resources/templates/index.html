@@ -1,17 +1,16 @@
 <!doctype html>
-<html lang="en">
+<html lang="en" xmlns:th="http://www.thymeleaf.org">
 <head>
 	<meta charset="utf-8">
 	<meta name="viewport" content="width=device-width, initial-scale=1, shrink-to-fit=no">
 	<link rel="icon" href="https://static.nowcoder.com/images/logo_87_87.png"/>
 	<link rel="stylesheet" href="https://stackpath.bootstrapcdn.com/bootstrap/4.3.1/css/bootstrap.min.css" crossorigin="anonymous">
-	<link rel="stylesheet" href="css/global.css" />
-	<title>牛客网-首页</title>
+	<link rel="stylesheet" th:href="@{/css/global.css}" />	<title>牛客网-首页</title>
 </head>
 <body>	
 	<div class="nk-container">
 		<!-- 头部 -->
-		<header class="bg-dark sticky-top">
+		<header class="bg-dark sticky-top" th:fragment="header">
 			<div class="container">
 				<!-- 导航 -->
 				<nav class="navbar navbar-expand-lg navbar-dark">
@@ -30,7 +29,7 @@
 								<a class="nav-link position-relative" href="site/letter.html">消息<span class="badge badge-danger">12</span></a>
 							</li>
 							<li class="nav-item ml-3 btn-group-vertical">
-								<a class="nav-link" href="site/register.html">注册</a>
+								<a class="nav-link" th:href="@{/user/register}">注册</a>
 							</li>
 							<li class="nav-item ml-3 btn-group-vertical">
 								<a class="nav-link" href="site/login.html">登录</a>
@@ -118,18 +117,21 @@
 				
 				<!-- 帖子列表 -->
 				<ul class="list-unstyled">
-					<li class="media pb-3 pt-3 mb-3 border-bottom">
+					<!--遍历map集合-->
+					<li class="media pb-3 pt-3 mb-3 border-bottom" th:each="discussPost:${discussPosts}">
 						<a href="site/profile.html">
-							<img src="http://images.nowcoder.com/head/1t.png" class="mr-4 rounded-circle" alt="用户头像" style="width:50px;height:50px;">
+							<!--动态获取用户头像-->
+							<img th:src="${discussPost.user.headerUrl}" class="mr-4 rounded-circle" alt="用户头像" style="width:50px;height:50px;">
 						</a>
 						<div class="media-body">
 							<h6 class="mt-0 mb-3">
-								<a href="site/discuss-detail.html">备战春招，面试刷题跟他复习，一个月全搞定！</a>
-								<span class="badge badge-secondary bg-primary">置顶</span>
-								<span class="badge badge-secondary bg-danger">精华</span>
+								<a href="#" th:utext="${discussPost.post.title}">备战春招，面试刷题跟他复习，一个月全搞定！</a>
+								<span class="badge badge-secondary bg-primary" th:if="discussPost.post.type==1">置顶</span>
+								<span class="badge badge-secondary bg-danger" th:if="discussPost.post.status==1">精华</span>
 							</h6>
 							<div class="text-muted font-size-12">
-								<u class="mr-3">寒江雪</u> 发布于 <b>2019-04-15 15:32:18</b>
+								<u class="mr-3" th:utext="${discussPost.user.username}">寒江雪</u> 发布于
+								<b th:text="${#temporals.format(discussPost.post.createTime, 'dd-MM-yyyy HH:mm:ss')}">2019-04-15 15:32:18</b>
 								<ul class="d-inline float-right">
 									<li class="d-inline ml-2">赞 11</li>
 									<li class="d-inline ml-2">|</li>
@@ -138,206 +140,37 @@
 							</div>
 						</div>						
 					</li>
-					<li class="media pb-3 pt-3 mb-3 border-bottom">
-						<a href="site/profile.html">
-							<img src="http://images.nowcoder.com/head/1t.png" class="mr-4 rounded-circle user-header" alt="用户头像">
-						</a>
-						<div class="media-body">
-							<h6 class="mt-0 mb-3">
-								<a href="site/discuss-detail.html">备战春招，面试刷题跟他复习，一个月全搞定！</a>
-								<span class="badge badge-secondary bg-primary">置顶</span>
-								<span class="badge badge-secondary bg-danger">精华</span>
-							</h6>
-							<div class="text-muted font-size-12">
-								<u class="mr-3">寒江雪</u> 发布于 <b>2019-04-15 15:32:18</b>
-								<ul class="d-inline float-right">
-									<li class="d-inline ml-2">赞 11</li>
-									<li class="d-inline ml-2">|</li>
-									<li class="d-inline ml-2">回帖 7</li>
-								</ul>
-							</div>
-						</div>
-					</li>
-					<li class="media pb-3 pt-3 mb-3 border-bottom">
-						<a href="site/profile.html">
-							<img src="http://images.nowcoder.com/head/1t.png" class="mr-4 rounded-circle user-header" alt="用户头像">
-						</a>
-						<div class="media-body">
-							<h6 class="mt-0 mb-3">
-								<a href="site/discuss-detail.html">备战春招，面试刷题跟他复习，一个月全搞定！</a>
-								<span class="badge badge-secondary bg-primary">置顶</span>
-								<span class="badge badge-secondary bg-danger">精华</span>
-							</h6>
-							<div class="text-muted font-size-12">
-								<u class="mr-3">寒江雪</u> 发布于 <b>2019-04-15 15:32:18</b>
-								<ul class="d-inline float-right">
-									<li class="d-inline ml-2">赞 11</li>
-									<li class="d-inline ml-2">|</li>
-									<li class="d-inline ml-2">回帖 7</li>
-								</ul>
-							</div>
-						</div>
-					</li>
-					<li class="media pb-3 pt-3 mb-3 border-bottom">
-						<a href="site/profile.html">
-							<img src="http://images.nowcoder.com/head/1t.png" class="mr-4 rounded-circle user-header" alt="用户头像">
-						</a>
-						<div class="media-body">
-							<h6 class="mt-0 mb-3">
-								<a href="site/discuss-detail.html">备战春招，面试刷题跟他复习，一个月全搞定！</a>
-								<span class="badge badge-secondary bg-primary">置顶</span>
-								<span class="badge badge-secondary bg-danger">精华</span>
-							</h6>
-							<div class="text-muted font-size-12">
-								<u class="mr-3">寒江雪</u> 发布于 <b>2019-04-15 15:32:18</b>
-								<ul class="d-inline float-right">
-									<li class="d-inline ml-2">赞 11</li>
-									<li class="d-inline ml-2">|</li>
-									<li class="d-inline ml-2">回帖 7</li>
-								</ul>
-							</div>
-						</div>
-					</li>
-					<li class="media pb-3 pt-3 mb-3 border-bottom">
-						<a href="site/profile.html">
-							<img src="http://images.nowcoder.com/head/1t.png" class="mr-4 rounded-circle user-header" alt="用户头像">
-						</a>
-						<div class="media-body">
-							<h6 class="mt-0 mb-3">
-								<a href="site/discuss-detail.html">备战春招，面试刷题跟他复习，一个月全搞定！</a>
-								<span class="badge badge-secondary bg-primary">置顶</span>
-								<span class="badge badge-secondary bg-danger">精华</span>
-							</h6>
-							<div class="text-muted font-size-12">
-								<u class="mr-3">寒江雪</u> 发布于 <b>2019-04-15 15:32:18</b>
-								<ul class="d-inline float-right">
-									<li class="d-inline ml-2">赞 11</li>
-									<li class="d-inline ml-2">|</li>
-									<li class="d-inline ml-2">回帖 7</li>
-								</ul>
-							</div>
-						</div>
-					</li>
-					<li class="media pb-3 pt-3 mb-3 border-bottom">
-						<a href="site/profile.html">
-							<img src="http://images.nowcoder.com/head/1t.png" class="mr-4 rounded-circle user-header" alt="用户头像">
-						</a>
-						<div class="media-body">
-							<h6 class="mt-0 mb-3">
-								<a href="site/discuss-detail.html">备战春招，面试刷题跟他复习，一个月全搞定！</a>
-								<span class="badge badge-secondary bg-primary">置顶</span>
-								<span class="badge badge-secondary bg-danger">精华</span>
-							</h6>
-							<div class="text-muted font-size-12">
-								<u class="mr-3">寒江雪</u> 发布于 <b>2019-04-15 15:32:18</b>
-								<ul class="d-inline float-right">
-									<li class="d-inline ml-2">赞 11</li>
-									<li class="d-inline ml-2">|</li>
-									<li class="d-inline ml-2">回帖 7</li>
-								</ul>
-							</div>
-						</div>
-					</li>
-					<li class="media pb-3 pt-3 mb-3 border-bottom">
-						<a href="site/profile.html">
-							<img src="http://images.nowcoder.com/head/1t.png" class="mr-4 rounded-circle user-header" alt="用户头像">
-						</a>
-						<div class="media-body">
-							<h6 class="mt-0 mb-3">
-								<a href="site/discuss-detail.html">备战春招，面试刷题跟他复习，一个月全搞定！</a>
-								<span class="badge badge-secondary bg-primary">置顶</span>
-								<span class="badge badge-secondary bg-danger">精华</span>
-							</h6>
-							<div class="text-muted font-size-12">
-								<u class="mr-3">寒江雪</u> 发布于 <b>2019-04-15 15:32:18</b>
-								<ul class="d-inline float-right">
-									<li class="d-inline ml-2">赞 11</li>
-									<li class="d-inline ml-2">|</li>
-									<li class="d-inline ml-2">回帖 7</li>
-								</ul>
-							</div>
-						</div>
-					</li>
-					<li class="media pb-3 pt-3 mb-3 border-bottom">
-						<a href="site/profile.html">
-							<img src="http://images.nowcoder.com/head/1t.png" class="mr-4 rounded-circle user-header" alt="用户头像">
-						</a>
-						<div class="media-body">
-							<h6 class="mt-0 mb-3">
-								<a href="site/discuss-detail.html">备战春招，面试刷题跟他复习，一个月全搞定！</a>
-								<span class="badge badge-secondary bg-primary">置顶</span>
-								<span class="badge badge-secondary bg-danger">精华</span>
-							</h6>
-							<div class="text-muted font-size-12">
-								<u class="mr-3">寒江雪</u> 发布于 <b>2019-04-15 15:32:18</b>
-								<ul class="d-inline float-right">
-									<li class="d-inline ml-2">赞 11</li>
-									<li class="d-inline ml-2">|</li>
-									<li class="d-inline ml-2">回帖 7</li>
-								</ul>
-							</div>
-						</div>
-					</li>
-					<li class="media pb-3 pt-3 mb-3 border-bottom">
-						<a href="site/profile.html">
-							<img src="http://images.nowcoder.com/head/1t.png" class="mr-4 rounded-circle user-header" alt="用户头像">
-						</a>
-						<div class="media-body">
-							<h6 class="mt-0 mb-3">
-								<a href="site/discuss-detail.html">备战春招，面试刷题跟他复习，一个月全搞定！</a>
-								<span class="badge badge-secondary bg-primary">置顶</span>
-								<span class="badge badge-secondary bg-danger">精华</span>
-							</h6>
-							<div class="text-muted font-size-12">
-								<u class="mr-3">寒江雪</u> 发布于 <b>2019-04-15 15:32:18</b>
-								<ul class="d-inline float-right">
-									<li class="d-inline ml-2">赞 11</li>
-									<li class="d-inline ml-2">|</li>
-									<li class="d-inline ml-2">回帖 7</li>
-								</ul>
-							</div>
-						</div>
-					</li>
-					<li class="media pb-3 pt-3 mb-3 border-bottom">
-						<a href="site/profile.html">
-							<img src="http://images.nowcoder.com/head/1t.png" class="mr-4 rounded-circle user-header" alt="用户头像">
-						</a>
-						<div class="media-body">
-							<h6 class="mt-0 mb-3">
-								<a href="site/discuss-detail.html">备战春招，面试刷题跟他复习，一个月全搞定！</a>
-								<span class="badge badge-secondary bg-primary">置顶</span>
-								<span class="badge badge-secondary bg-danger">精华</span>
-							</h6>
-							<div class="text-muted font-size-12">
-								<u class="mr-3">寒江雪</u> 发布于 <b>2019-04-15 15:32:18</b>
-								<ul class="d-inline float-right">
-									<li class="d-inline ml-2">赞 11</li>
-									<li class="d-inline ml-2">|</li>
-									<li class="d-inline ml-2">回帖 7</li>
-								</ul>
-							</div>
-						</div>
-					</li>
 				</ul>
 				<!-- 分页 -->
-				<nav class="mt-5">
+				<nav class="mt-5" th:if="${page.total > 0}">
 					<ul class="pagination justify-content-center">
-						<li class="page-item"><a class="page-link" href="#">首页</a></li>
-						<li class="page-item disabled"><a class="page-link" href="#">上一页</a></li>
-						<li class="page-item active"><a class="page-link" href="#">1</a></li>
-						<li class="page-item"><a class="page-link" href="#">2</a></li>
-						<li class="page-item"><a class="page-link" href="#">3</a></li>
-						<li class="page-item"><a class="page-link" href="#">4</a></li>
-						<li class="page-item"><a class="page-link" href="#">5</a></li>
-						<li class="page-item"><a class="page-link" href="#">下一页</a></li>
-						<li class="page-item"><a class="page-link" href="#">末页</a></li>
+						<!--相当于发送请求: /index?current=1。size用默认值10-->
+						<li class="page-item">
+							<a class="page-link" th:href="@{${page.path}(current=1)}">首页</a>
+						</li>
+						<!--如果是在首页则禁用-->
+						<li th:class="|page-item ${page.current==1?'disabled':''}|">
+							<a class="page-link" th:href="@{${page.path}(current=${page.current-1})}">上一页</a>
+						</li>
+						<!--遍历(i = startPage to i = lastPage)-->
+						<li th:class="|page-item ${i==page.current?'active':''}|" th:each="i:${#numbers.sequence(page.startPage,page.lastPage)}">
+							<!--发送请求：/index?current=i-->
+							<a class="page-link" th:href="@{${page.path}(current=${i})}" th:text="${i}">1</a>
+						</li>
+						<!--如果是在末页则禁用-->
+						<li th:class="|page-item ${page.current==page.lastPage?'disabled':''}|">
+							<a class="page-link" th:href="@{${page.path}(current=${page.current+1})}">下一页</a>
+						</li>
+						<li class="page-item">
+							<a class="page-link" th:href="@{${page.path}(current=${page.lastPage})}">末页</a>
+						</li>
 					</ul>
 				</nav>
 			</div>
 		</div>
 
 		<!-- 尾部 -->
-		<footer class="bg-dark">
+		<footer class="bg-dark" th:fragment="footer">
 			<div class="container">
 				<div class="row">
 					<!-- 二维码 -->
@@ -402,7 +235,7 @@
 	<script src="https://code.jquery.com/jquery-3.3.1.min.js" crossorigin="anonymous"></script>
 	<script src="https://cdnjs.cloudflare.com/ajax/libs/popper.js/1.14.7/umd/popper.min.js" crossorigin="anonymous"></script>
 	<script src="https://stackpath.bootstrapcdn.com/bootstrap/4.3.1/js/bootstrap.min.js" crossorigin="anonymous"></script>
-	<script src="js/global.js"></script>
-	<script src="js/index.js"></script>
+	<script th:src="@{/js/global.js}"></script>
+	<script th:src="@{/js/index.js}"></script>
 </body>
 </html>
