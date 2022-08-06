@@ -12,5 +12,11 @@ import com.baomidou.mybatisplus.extension.service.IService;
  * @since 2022-07-26
  */
 public interface IUserService extends IService<User> {
-    public int activation(int userId, String code);
+    /**
+     * 激活方法
+     * @param userId 用户id
+     * @param code 激活码
+     * @return 激活状态
+     */
+    int activation(int userId, String code);
 }

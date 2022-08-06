@@ -19,6 +19,12 @@ import static com.community_blog.util.CommunnityConstant.*;
 @Service
 public class UserServiceImpl extends ServiceImpl<UserDao, User> implements IUserService {
 
+    /**
+     * 激活方法
+     * @param userId 用户id
+     * @param code 激活码
+     * @return 激活状态
+     */
     @Override
     public int activation(int userId, String code) {
         User user = this.getById(userId);
