@@ -3,6 +3,8 @@ package com.community_blog.service;
 import com.community_blog.domain.User;
 import com.baomidou.mybatisplus.extension.service.IService;
 
+import java.util.Map;
+
 /**
  * <p>
  *  服务类
@@ -19,4 +21,11 @@ public interface IUserService extends IService<User> {
      * @return 激活状态
      */
     int activation(int userId, String code);
+
+    /**
+     * 验证用户信息
+     * @param user 用户对象
+     * @return 验证结果
+     */
+    Map<String, String> register(User user);
 }

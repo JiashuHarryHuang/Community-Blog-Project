@@ -1,13 +1,8 @@
 package com.community_blog.controller;
 
-
-import com.baomidou.mybatisplus.core.conditions.query.LambdaQueryWrapper;
-import com.community_blog.DTO.UserDto;
-import com.community_blog.domain.LoginTicket;
 import com.community_blog.domain.User;
 import com.community_blog.service.IUserService;
 import com.community_blog.util.MailClient;
-import com.google.code.kaptcha.Producer;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
@@ -18,15 +13,7 @@ import org.springframework.web.bind.annotation.*;
 import org.thymeleaf.TemplateEngine;
 import org.thymeleaf.context.Context;
 
-import javax.imageio.ImageIO;
-import javax.servlet.http.Cookie;
-import javax.servlet.http.HttpServletRequest;
-import javax.servlet.http.HttpServletResponse;
-import javax.servlet.http.HttpSession;
-import java.awt.image.BufferedImage;
-import java.io.IOException;
-import java.io.OutputStream;
-import java.time.LocalDateTime;
+import java.util.Map;
 import java.util.Random;
 import java.util.UUID;
 
@@ -67,12 +54,6 @@ public class UserController {
     private String domain;
 
     /**
-     * 验证码工具
-     */
-    @Autowired
-    private Producer kaptchaProducer;
-
-    /**
      * 跳转至注册页面
      * @return 注册页面地址
      */
@@ -91,26 +72,21 @@ public class UserController {
     public String register(Model model, @ModelAttribute User user) {
         log.info("Registering: {}", user.toString());
 
-        //判断用户名是否已存在
-        String username = user.getUsername();
-        //Select count(*) from user where username = ?
-        LambdaQueryWrapper<User> userLambdaQueryWrapper = new LambdaQueryWrapper<>();
-        userLambdaQueryWrapper.eq(User::getUsername, username);
-        int count = userService.count(userLambdaQueryWrapper);
-        if (count != 0) { //用户名已存在
-            model.addAttribute("usernameMsg", "用户名已存在");
-            model.addAttribute("user", user);
+        //数据回显
+        model.addAttribute("user", user);
+
+        //验证数据
+        Map<String, String> messages = userService.register(user);
+
+        //将错误结果回显
+        String usernameMsg = messages.get("usernameMsg");
+        String emailMsg = messages.get("emailMsg");
+        if (usernameMsg != null) {
+            model.addAttribute("usernameMsg", usernameMsg);
             return "/site/register";
         }
-
-        //判断email是否已被注册
-        String email = user.getEmail();
-        //Select count(*) from user where username = ? or email = ?
-        userLambdaQueryWrapper.or().eq(User::getEmail, email);
-        count = userService.count(userLambdaQueryWrapper);
-        if (count != 0) {
-            model.addAttribute("emailMsg", "该邮箱已被注册!");
-            model.addAttribute("user", user);
+        if (emailMsg != null) {
+            model.addAttribute("emailMsg", emailMsg);
             return "/site/register";
         }
 
@@ -135,7 +111,7 @@ public class UserController {
 
         //发送激活邮件
         Context context = new Context();
-        context.setVariable("email", email); //传数据给模板
+        context.setVariable("email", user.getEmail()); //传数据给模板
         String url = domain + "/user/activation/" + user.getId() + "/" + user.getActivationCode();
         context.setVariable("url", url);
         //根据模板的格式发送邮件
@@ -164,7 +140,7 @@ public class UserController {
         if (result == ACTIVATION_SUCCESS) {
             //激活成功，跳转登陆页面
             model.addAttribute("msg", "激活成功,您的账号已经可以正常使用了!");
-            model.addAttribute("target", "/user/login");
+            model.addAttribute("target", "/loginTicket/login");
         } else if (result == ACTIVATION_REPEAT) {
             //激活重复，跳转首页
             model.addAttribute("msg", "无效操作,该账号已经激活过了!");
@@ -175,6 +151,11 @@ public class UserController {
             model.addAttribute("target", "/discussPost/index");
         }
         return "/site/operate-result";
+    }
+
+    @GetMapping("/setting")
+    public String getSettingPage() {
+        return "/site/setting";
     }
 }
 

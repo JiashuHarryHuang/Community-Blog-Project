@@ -1,7 +1,10 @@
 package com.community_blog.service;
 
+import com.community_blog.DTO.UserDto;
 import com.community_blog.domain.LoginTicket;
 import com.baomidou.mybatisplus.extension.service.IService;
+
+import java.util.Map;
 
 /**
  * <p>
@@ -12,5 +15,5 @@ import com.baomidou.mybatisplus.extension.service.IService;
  * @since 2022-07-26
  */
 public interface ILoginTicketService extends IService<LoginTicket> {
-
+    Map<String, Object> login(UserDto userDto);
 }

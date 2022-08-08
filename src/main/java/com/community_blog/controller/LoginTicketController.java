@@ -23,6 +23,7 @@ import java.awt.image.BufferedImage;
 import java.io.IOException;
 import java.io.OutputStream;
 import java.time.LocalDateTime;
+import java.util.Map;
 import java.util.UUID;
 
 import static com.community_blog.util.CommunnityConstant.DEFAULT_EXPIRED_SECONDS;
@@ -30,7 +31,7 @@ import static com.community_blog.util.CommunnityConstant.REMEMBER_EXPIRED_SECOND
 
 /**
  * <p>
- *  前端控制器
+ * 前端控制器
  * </p>
  *
  * @author Harry
@@ -54,6 +55,7 @@ public class LoginTicketController {
 
     /**
      * 跳转至登录页面
+     *
      * @return 登录页面地址
      */
     @GetMapping("/login")
@@ -63,8 +65,9 @@ public class LoginTicketController {
 
     /**
      * 生成验证码
+     *
      * @param response 响应数据
-     * @param session 会话
+     * @param session  会话
      */
     @GetMapping("/kaptcha")
     public void getKaptcha(HttpServletResponse response, HttpSession session) {
@@ -88,9 +91,10 @@ public class LoginTicketController {
 
     /**
      * 登录操作
-     * @param model 模板
-     * @param userDto 前端数据封装对象
-     * @param session 会话
+     *
+     * @param model    模板
+     * @param userDto  前端数据封装对象
+     * @param session  会话
      * @param response 响应
      * @return 登录成功/失败页面
      */
@@ -98,34 +102,25 @@ public class LoginTicketController {
     public String login(Model model, UserDto userDto, HttpSession session, HttpServletResponse response) {
         log.info("登录操作");
 
-        //查看用户是否存在
-        String userName = userDto.getUsername();
-        //select * from user where username = ?
-        LambdaQueryWrapper<User> userLambdaQueryWrapper = new LambdaQueryWrapper<>();
-        userLambdaQueryWrapper.eq(User::getUsername, userName);
-        User user = userService.getOne(userLambdaQueryWrapper);
-
         //数据回显
         model.addAttribute("user", userDto);
 
-        if (user == null) { //账号不存在
-            model.addAttribute("usernameMsg", "该账号不存在!");
+        //验证数据
+        Map<String, Object> result = loginTicketService.login(userDto);
+        String usernameMsg = (String) result.get("usernameMsg");
+        String passwordMsg = (String) result.get("passwordMsg");
+
+        //验证结果回显
+        if (usernameMsg != null) {
+            model.addAttribute("usernameMsg", usernameMsg);
+            return "/site/login";
+        }
+        if (passwordMsg != null) {
+            model.addAttribute("passwordMsg", passwordMsg);
             return "/site/login";
         }
 
-        //查看用户是否激活
-        if (user.getStatus() == 0) {
-            model.addAttribute("usernameMsg", "账户未激活!");
-            return "/site/login";
-        }
-
-        //验证密码
-        String password = userDto.getPassword();
-        password = DigestUtils.md5DigestAsHex(password.getBytes());
-        if (!user.getPassword().equals(password)) {
-            model.addAttribute("passwordMsg", "密码不正确!");
-            return "/site/login";
-        }
+        User user = (User) result.get("user");
 
         //验证验证码
         String code = (String) session.getAttribute("code");
@@ -157,6 +152,7 @@ public class LoginTicketController {
 
     /**
      * 登出操作
+     *
      * @param ticket cookie里的登录凭证
      * @return 登陆页面
      */

@@ -98,10 +98,5 @@ public class DiscussPostController {
         model.addAttribute("page", postPage);
         return "/index";
     }
-
-    @GetMapping("/register")
-    public String getRegisterPage() {
-        return "/site/register";
-    }
 }
 
