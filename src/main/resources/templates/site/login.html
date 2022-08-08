@@ -37,7 +37,7 @@
 							<input type="password" th:class="|form-control ${passwordMsg != null ? 'is-invalid' : ''}|"
 								   name="password" id="password" th:value="${user != null ? user.password : ''}"
 								   placeholder="请输入您的密码!" required>
-							<div class="invalid-feedback" th:text="${passwordMsg != null ? passwordMsg : ''}">
+							<div class="invalid-feedback" th:text="${passwordMsg != null ? passwordMsg : '密码长度不能小于8位!'}">
 								密码长度不能小于8位!
 							</div>							
 						</div>
@@ -53,6 +53,7 @@
 							</div>
 						</div>
 						<div class="col-sm-4">
+							<!--获取验证码图片-->
 							<img th:src="@{/loginTicket/kaptcha}" id="kaptcha" style="width:100px;height:40px;" class="mr-2"/>
 							<a href="javascript:refresh_kaptcha();" class="font-size-12 align-bottom">刷新验证码</a>
 						</div>

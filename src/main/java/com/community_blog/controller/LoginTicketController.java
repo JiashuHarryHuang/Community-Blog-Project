@@ -61,6 +61,11 @@ public class LoginTicketController {
         return "/site/login";
     }
 
+    /**
+     * 生成验证码
+     * @param response 响应数据
+     * @param session 会话
+     */
     @GetMapping("/kaptcha")
     public void getKaptcha(HttpServletResponse response, HttpSession session) {
         // 生成验证码
@@ -81,6 +86,14 @@ public class LoginTicketController {
         }
     }
 
+    /**
+     * 登录操作
+     * @param model 模板
+     * @param userDto 前端数据封装对象
+     * @param session 会话
+     * @param response 响应
+     * @return 登录成功/失败页面
+     */
     @PostMapping("/login")
     public String login(Model model, UserDto userDto, HttpSession session, HttpServletResponse response) {
         log.info("登录操作");
@@ -95,7 +108,7 @@ public class LoginTicketController {
         //数据回显
         model.addAttribute("user", userDto);
 
-        if (user == null) {
+        if (user == null) { //账号不存在
             model.addAttribute("usernameMsg", "该账号不存在!");
             return "/site/login";
         }
@@ -136,12 +149,19 @@ public class LoginTicketController {
         //生成cookie
         Cookie cookie = new Cookie("ticket", loginTicket.getTicket());
         cookie.setMaxAge(expiredTime);
+        //设置路径：让cookie可以被所有路径访问
+        cookie.setPath("/");
         response.addCookie(cookie);
         return "redirect:/discussPost/index";
     }
 
+    /**
+     * 登出操作
+     * @param ticket cookie里的登录凭证
+     * @return 登陆页面
+     */
     @GetMapping("/logout")
-    public String logout(Model model, @CookieValue("ticket") String ticket) {
+    public String logout(@CookieValue("ticket") String ticket) {
         log.info("登出操作");
 
         //更新状态：update login_ticket set status = 1 where ticket = ?
@@ -150,9 +170,9 @@ public class LoginTicketController {
         loginTicket.setStatus(1);
         LambdaQueryWrapper<LoginTicket> loginTicketLambdaQueryWrapper = new LambdaQueryWrapper<>();
         loginTicketLambdaQueryWrapper.eq(LoginTicket::getTicket, ticket);
+
         loginTicketService.update(loginTicket, loginTicketLambdaQueryWrapper);
 
         return "redirect:/loginTicket/login";
     }
 }
-
