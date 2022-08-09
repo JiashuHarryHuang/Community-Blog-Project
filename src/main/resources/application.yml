@@ -22,4 +22,5 @@ spring:
             enable: true
 community:
   path:
-    domain: localhost:8080
+    domain: http://localhost:8080
+    img: D:/Harry/Dark-Horse/Projects/community_blog/img

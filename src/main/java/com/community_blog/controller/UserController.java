@@ -1,18 +1,28 @@
 package com.community_blog.controller;
 
+import com.community_blog.annotation.LoginRequired;
 import com.community_blog.domain.User;
 import com.community_blog.service.IUserService;
+import com.community_blog.util.HostHolder;
 import com.community_blog.util.MailClient;
 import lombok.extern.slf4j.Slf4j;
+import org.apache.tomcat.util.http.fileupload.IOUtils;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
 import org.springframework.util.DigestUtils;
 import org.springframework.web.bind.annotation.*;
+import org.springframework.web.multipart.MultipartFile;
 import org.thymeleaf.TemplateEngine;
 import org.thymeleaf.context.Context;
 
+import javax.servlet.ServletOutputStream;
+import javax.servlet.http.HttpServletResponse;
+import java.io.File;
+import java.io.FileInputStream;
+import java.io.IOException;
+import java.io.OutputStream;
 import java.util.Map;
 import java.util.Random;
 import java.util.UUID;
@@ -52,6 +62,15 @@ public class UserController {
      */
     @Value("${community.path.domain}")
     private String domain;
+
+    /**
+     * 图片存放地址
+     */
+    @Value("${community.path.img}")
+    private String uploadPath;
+
+    @Autowired
+    private HostHolder hostHolder;
 
     /**
      * 跳转至注册页面
@@ -154,8 +173,83 @@ public class UserController {
     }
 
     @GetMapping("/setting")
+    @LoginRequired
     public String getSettingPage() {
         return "/site/setting";
     }
-}
 
+    /**
+     * 上传图片功能
+     * @param headerImage 上传的图片文件
+     * @param model 模板
+     * @return 回到首页
+     */
+    @PostMapping("/upload")
+    @LoginRequired
+    public String upload(MultipartFile headerImage, Model model) {
+        log.info("上传图片");
+
+        if (headerImage == null) {
+            model.addAttribute("error", "您还没有选择图片!");
+            return "/site/setting";
+        }
+
+        //获取图片名
+        String fileName = headerImage.getOriginalFilename();
+        assert fileName != null;
+        String suffix = fileName.substring(fileName.lastIndexOf("."));
+        if (!(".jpg".equals(suffix)
+                || ".png".equals(suffix)
+                || "jpeg".equals(suffix)
+                || ".gif".equals(suffix))) {
+            model.addAttribute("error", "文件的格式不正确!");
+            return "/site/setting";
+        }
+
+        // 生成随机文件名
+        fileName = UUID.randomUUID() + suffix;
+        // 确定文件存放的路径
+        File dest = new File(uploadPath + "/" + fileName);
+        try {
+            // 存储文件
+            headerImage.transferTo(dest);
+        } catch (IOException e) {
+            log.error("上传文件失败: " + e.getMessage());
+            throw new RuntimeException("上传文件失败,服务器发生异常!", e);
+        }
+
+        // 更新当前用户的头像的路径(web访问路径)
+        // http://localhost:8080/user/header/xxx.png
+        User user = hostHolder.getUser();
+        String headerUrl = domain + "/user/header/" + fileName;
+        user.setHeaderUrl(headerUrl);
+        userService.updateById(user);
+
+        return "redirect:/discussPost/index";
+    }
+
+    /**
+     * 获取头像图片
+     * @param fileName 图片名
+     * @param response 响应对象
+     */
+    @GetMapping("/header/{fileName}")
+    public void getHeader(@PathVariable("fileName") String fileName, HttpServletResponse response) {
+        // 服务器存放路径
+        fileName = uploadPath + "/" + fileName;
+        // 文件后缀
+        String suffix = fileName.substring(fileName.lastIndexOf("."));
+        // 响应图片
+        response.setContentType("image/" + suffix);
+        try (//放置资源
+                //创建输入流和输出流
+                FileInputStream fis = new FileInputStream(fileName);
+                ServletOutputStream os = response.getOutputStream();
+        ) {
+            //复制输入流到输出流：将服务器存储的图片展示到网页上
+            IOUtils.copy(fis, os);
+        } catch (IOException e) {
+            log.error("读取头像失败: " + e.getMessage());
+        }
+    }
+}
