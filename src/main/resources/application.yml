@@ -13,7 +13,7 @@ spring:
     host: smtp.sina.com
     port: 465
     username: jiashuhuang@sina.com
-    password: e00ef2c2c847e306 #授权码而不是真实密码
+    password:  #授权码而不是真实密码
     protocol: smtps
     properties:
       mail:
