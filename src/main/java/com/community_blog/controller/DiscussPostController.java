@@ -1,22 +1,29 @@
 package com.community_blog.controller;
 
 
+import com.alibaba.fastjson.JSON;
 import com.baomidou.mybatisplus.core.conditions.query.LambdaQueryWrapper;
 import com.baomidou.mybatisplus.extension.plugins.pagination.Page;
+import com.community_blog.annotation.LoginRequired;
+import com.community_blog.common.Result;
 import com.community_blog.domain.DiscussPost;
 import com.community_blog.domain.User;
 import com.community_blog.service.IDiscussPostService;
 import com.community_blog.service.IUserService;
+import com.community_blog.util.HostHolder;
+import com.community_blog.util.SensitiveFilter;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
 import org.springframework.web.bind.annotation.GetMapping;
+import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestMapping;
 
 import java.util.*;
 
 import com.community_blog.common.MyPage;
+import org.springframework.web.bind.annotation.ResponseBody;
 
 /**
  * <p>
@@ -53,6 +60,18 @@ public class DiscussPostController {
     private IUserService userService;
 
     /**
+     * ThreadLocal
+     */
+    @Autowired
+    private HostHolder hostHolder;
+
+    /**
+     * 敏感词过滤
+     */
+    @Autowired
+    private SensitiveFilter sensitiveFilter;
+
+    /**
      * 分页查询帖子表和用户信息，并将数据发回给前端
      * @param model 模板引擎对象
      * @param current 当前页
@@ -70,7 +89,7 @@ public class DiscussPostController {
         postPage.setSize(Objects.requireNonNullElse(size, DEFAULT_SIZE));
         postPage.setPath("/discussPost/index");
 
-        //添加条件
+        //分页查询
         LambdaQueryWrapper<DiscussPost> postWrapper = new LambdaQueryWrapper<>();
         //select * from discuss_post where status != 2 order by type desc, create_time desc limit current-1, size;
         postWrapper.ne(DiscussPost::getStatus, 2)
@@ -98,5 +117,38 @@ public class DiscussPostController {
         model.addAttribute("page", postPage);
         return "/index";
     }
-}
 
+    /**
+     * 发布帖子
+     * @param discussPost 帖子标题和内容
+     * @return 成功/失败信息
+     */
+    @PostMapping("/add")
+    @ResponseBody
+    @LoginRequired
+    public String sendPost(DiscussPost discussPost) {
+        log.info("发送帖子");
+
+        //过滤敏感词
+        String filteredTitle = sensitiveFilter.filter(discussPost.getTitle());
+        String filteredContent = sensitiveFilter.filter(discussPost.getContent());
+
+        //获取当前登录用户
+        User user = hostHolder.getUser();
+        if (user == null) {
+            return JSON.toJSONString(Result.error("你还没有登录哦!"));
+        }
+
+        //设置用户
+        discussPost.setUserId(user.getId());
+        discussPost.setContent(filteredContent);
+        discussPost.setTitle(filteredTitle);
+
+        //添加用户到数据库
+        discussPostService.save(discussPost);
+
+        //返回成功信息
+        return JSON.toJSONString(Result.success("发布成功!"));
+
+    }
+}
