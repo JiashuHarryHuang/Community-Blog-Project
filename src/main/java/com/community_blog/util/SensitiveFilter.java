@@ -45,7 +45,7 @@ public class SensitiveFilter {
     }
 
     /**
-     * 添加一个字符串到字典树
+     * 添加一个字符串到字典树，O(N)
      * @param keyword 要添加的字符串
      */
     private void addKeyword(String keyword) {
@@ -72,7 +72,7 @@ public class SensitiveFilter {
     }
 
     /**
-     * 过滤敏感词
+     * 过滤敏感词, O(N)
      * @param text 需要检查的字符串
      * @return 过滤掉敏感词的字符串
      */
@@ -109,7 +109,7 @@ public class SensitiveFilter {
                 cur = root;
                 ++slow;
             } else {
-                if (cur.isLastChar) { //当前子串是敏感词
+                if (cur.isKeywordEnd()) { //当前子串是敏感词
                     //敏感词打码并让slow去找fast然后一起更新
                     resultStr.append(REPLACEMENT);
                     slow = fast;
@@ -121,6 +121,7 @@ public class SensitiveFilter {
             ++fast;
         }
 
+        //将最后一批字符计入结果
         resultStr.append(text.substring(slow));
 
         return resultStr.toString();
@@ -166,7 +167,7 @@ public class SensitiveFilter {
         }
 
         /**
-         * 添加字符/节点
+         * 添加字符/节点，O(1)
          * @param c 字符
          * @param node 新节点
          */
@@ -175,7 +176,7 @@ public class SensitiveFilter {
         }
 
         /**
-         * 根据字符获取子节点
+         * 根据字符获取子节点，O(1)
          * @param c 字符
          * @return 字符对应的子节点
          */

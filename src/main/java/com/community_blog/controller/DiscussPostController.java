@@ -16,14 +16,11 @@ import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
-import org.springframework.web.bind.annotation.GetMapping;
-import org.springframework.web.bind.annotation.PostMapping;
-import org.springframework.web.bind.annotation.RequestMapping;
+import org.springframework.web.bind.annotation.*;
 
 import java.util.*;
 
 import com.community_blog.common.MyPage;
-import org.springframework.web.bind.annotation.ResponseBody;
 
 /**
  * <p>
@@ -150,5 +147,17 @@ public class DiscussPostController {
         //返回成功信息
         return JSON.toJSONString(Result.success("发布成功!"));
 
+    }
+
+    @GetMapping("/detail/{id}")
+    public String getDiscussPost(@PathVariable int id, Model model) {
+        log.info("获取帖子详情：{}", id);
+        DiscussPost discussPost = discussPostService.getById(id);
+        model.addAttribute("post", discussPost);
+
+        User user = userService.getById(discussPost.getUserId());
+        model.addAttribute("user", user);
+
+        return "/site/discuss-detail";
     }
 }
