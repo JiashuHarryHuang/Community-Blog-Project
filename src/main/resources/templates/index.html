@@ -130,7 +130,7 @@
 				<!-- 帖子列表 -->
 				<ul class="list-unstyled">
 					<!--遍历map集合-->
-					<li class="media pb-3 pt-3 mb-3 border-bottom" th:each="discussPost:${discussPosts}">
+					<li class="media pb-3 pt-3 mb-3 border-bottom" th:each="discussPost:${discussPostPage.records}">
 						<a href="site/profile.html">
 							<!--动态获取用户头像-->
 							<img th:src="${discussPost.user.headerUrl}" class="mr-4 rounded-circle"
@@ -138,55 +138,55 @@
 						</a>
 						<div class="media-body">
 							<h6 class="mt-0 mb-3">
-								<a href="#" th:href="@{|/discussPost/detail/${discussPost.post.id}|}"
-								   th:utext="${discussPost.post.title}">
+								<a href="#" th:href="@{|/discussPost/detail/${discussPost.id}|}"
+								   th:utext="${discussPost.title}">
 									备战春招，面试刷题跟他复习，一个月全搞定！
 								</a>
-								<span class="badge badge-secondary bg-primary" th:if="discussPost.post.type==1">
+								<span class="badge badge-secondary bg-primary" th:if="discussPost.type==1">
 									置顶
 								</span>
-								<span class="badge badge-secondary bg-danger" th:if="discussPost.post.status==1">
+								<span class="badge badge-secondary bg-danger" th:if="discussPost.status==1">
 									精华
 								</span>
 							</h6>
 							<div class="text-muted font-size-12">
 								<u class="mr-3" th:utext="${discussPost.user.username}">寒江雪</u> 发布于
 								<!--用于改变LocalDateTime类型数据的格式-->
-								<b th:text="${#temporals.format(discussPost.post.createTime, 'dd-MM-yyyy HH:mm:ss')}">
+								<b th:text="${#temporals.format(discussPost.createTime, 'dd-MM-yyyy HH:mm:ss')}">
 									2019-04-15 15:32:18
 								</b>
 								<ul class="d-inline float-right">
 									<li class="d-inline ml-2">赞 11</li>
 									<li class="d-inline ml-2">|</li>
-									<li class="d-inline ml-2">回帖 7</li>
+									<li class="d-inline ml-2">回帖 <span th:text="${discussPost.commentCount}">7</span></li>
 								</ul>
 							</div>
 						</div>						
 					</li>
 				</ul>
 				<!-- 分页 -->
-				<nav class="mt-5" th:if="${page.total > 0}">
+				<nav class="mt-5" th:if="${discussPostPage.total > 0}">
 					<ul class="pagination justify-content-center">
 						<!--相当于发送请求: /index?current=1。size用默认值10-->
 						<li class="page-item">
-							<a class="page-link" th:href="@{${page.path}(current=1)}">首页</a>
+							<a class="page-link" th:href="@{${discussPostPage.path}(current=1)}">首页</a>
 						</li>
 						<!--如果是在首页则禁用-->
-						<li th:class="|page-item ${page.current==1?'disabled':''}|">
-							<a class="page-link" th:href="@{${page.path}(current=${page.current-1})}">上一页</a>
+						<li th:class="|page-item ${discussPostPage.current==1?'disabled':''}|">
+							<a class="page-link" th:href="@{${discussPostPage.path}(current=${discussPostPage.current-1})}">上一页</a>
 						</li>
 						<!--遍历(i = startPage to i = lastPage)-->
-						<li th:class="|page-item ${i==page.current?'active':''}|"
-							th:each="i:${#numbers.sequence(page.startPage,page.lastPage)}">
+						<li th:class="|page-item ${i==discussPostPage.current?'active':''}|"
+							th:each="i:${#numbers.sequence(discussPostPage.startPage,discussPostPage.lastPage)}">
 							<!--发送请求：/index?current=i-->
-							<a class="page-link" th:href="@{${page.path}(current=${i})}" th:text="${i}">1</a>
+							<a class="page-link" th:href="@{${discussPostPage.path}(current=${i})}" th:text="${i}">1</a>
 						</li>
 						<!--如果是在末页则禁用-->
-						<li th:class="|page-item ${page.current==page.lastPage?'disabled':''}|">
-							<a class="page-link" th:href="@{${page.path}(current=${page.current+1})}">下一页</a>
+						<li th:class="|page-item ${discussPostPage.current==discussPostPage.lastPage?'disabled':''}|">
+							<a class="page-link" th:href="@{${discussPostPage.path}(current=${discussPostPage.current+1})}">下一页</a>
 						</li>
 						<li class="page-item">
-							<a class="page-link" th:href="@{${page.path}(current=${page.lastPage})}">末页</a>
+							<a class="page-link" th:href="@{${discussPostPage.path}(current=${discussPostPage.lastPage})}">末页</a>
 						</li>
 					</ul>
 				</nav>

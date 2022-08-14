@@ -24,3 +24,4 @@ community:
   path:
     domain: http://localhost:8080
     img: D:/Harry/Dark-Horse/Projects/community_blog/img
+    page: /discussPost/index
