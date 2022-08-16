@@ -3,11 +3,14 @@ package com.community_blog.controller;
 
 import com.alibaba.fastjson.JSON;
 import com.baomidou.mybatisplus.core.conditions.query.LambdaQueryWrapper;
+import com.community_blog.DTO.CommentDto;
 import com.community_blog.DTO.DiscussPostDto;
 import com.community_blog.annotation.LoginRequired;
 import com.community_blog.common.Result;
+import com.community_blog.domain.Comment;
 import com.community_blog.domain.DiscussPost;
 import com.community_blog.domain.User;
+import com.community_blog.service.ICommentService;
 import com.community_blog.service.IDiscussPostService;
 import com.community_blog.service.IUserService;
 import com.community_blog.util.HostHolder;
@@ -23,6 +26,9 @@ import org.springframework.web.bind.annotation.*;
 import java.util.*;
 
 import com.community_blog.common.MyPage;
+
+import static com.community_blog.util.CommunnityConstant.ENTITY_TYPE_COMMENT;
+import static com.community_blog.util.CommunnityConstant.ENTITY_TYPE_POST;
 
 /**
  * <p>
@@ -61,10 +67,19 @@ public class DiscussPostController {
     private SensitiveFilter sensitiveFilter;
 
     /**
-     * 分页查询路径
+     * 帖子分页查询路径
      */
-    @Value("${community.path.page}")
-    private String pagePath;
+    @Value("${community.path.postPage}")
+    private String postPagePath;
+
+    /**
+     * 评论分页查询路径
+     */
+    @Value("${community.path.commentPage}")
+    private String commentPagePath;
+
+    @Autowired
+    private ICommentService commentService;
 
     /**
      * 分页查询帖子表和用户信息，并将数据发回给前端
@@ -77,7 +92,7 @@ public class DiscussPostController {
         log.info("分页查询");
 
         //初始化page对象
-        page.setPath(pagePath);
+        page.setPath(postPagePath);
 
         //分页查询
         LambdaQueryWrapper<DiscussPost> postWrapper = new LambdaQueryWrapper<>();
@@ -106,7 +121,7 @@ public class DiscussPostController {
         }
 
         //将数据发回给前端
-        model.addAttribute("discussPostPage", discussPostPage);
+        model.addAttribute("page", discussPostPage);
         return "/index";
     }
 
@@ -146,18 +161,71 @@ public class DiscussPostController {
 
     /**
      * 获取帖子内容
-     * @param id 帖子id
+     * @param postId 帖子id
      * @param model 模板引擎
+     * @param page 接收前端的current和size对象
      * @return 帖子页面
      */
-    @GetMapping("/detail/{id}")
-    public String getDiscussPost(@PathVariable int id, Model model) {
-        log.info("获取帖子详情：{}", id);
-        DiscussPost discussPost = discussPostService.getById(id);
+    @GetMapping("/detail/{postId}")
+    public String getDiscussPost(@PathVariable int postId, Model model, MyPage<Comment> page) {
+        log.info("获取帖子详情：{}", postId);
+        //获取帖子
+        DiscussPost discussPost = discussPostService.getById(postId);
         model.addAttribute("post", discussPost);
 
+        //获取用户
         User user = userService.getById(discussPost.getUserId());
         model.addAttribute("user", user);
+
+        //设置MyPage对象
+        page.setSize(5L);
+        page.setPath(commentPagePath + postId);
+
+        //分页查询帖子评论
+        commentService.findCommentsByEntity(ENTITY_TYPE_POST, discussPost.getId(), page);
+
+        //数据传输对象
+        MyPage<CommentDto> commentPage = new MyPage<>();
+        //复制对象
+        BeanUtils.copyProperties(page, commentPage, "records");
+
+        //遍历page对象，然后给每个commentDto赋值，最后装配到一个List集合
+        List<CommentDto> commentDtoList = page.getRecords().stream().map(comment -> {
+            CommentDto commentDto = new CommentDto();
+            BeanUtils.copyProperties(comment, commentDto);
+
+            //设置发表评论的用户
+            commentDto.setCommenter(userService.getById(commentDto.getUserId()));
+
+            //查询回复
+            List<Comment> replies = commentService.findCommentsByEntity(ENTITY_TYPE_COMMENT, comment.getId());
+
+            //遍历回复对象，对每个replyDto进行赋值
+            List<CommentDto> repliesDto = replies.stream().map(reply -> {
+                CommentDto replyDto = new CommentDto();
+                BeanUtils.copyProperties(reply, replyDto);
+
+                //设置发表回复的用户
+                replyDto.setCommenter(userService.getById(commentDto.getUserId()));
+
+                //设置回复的对象，如果id为0则设置成null
+                User target = reply.getTargetId() == 0 ? null : userService.getById(reply.getTargetId());
+                replyDto.setTarget(target);
+
+                return replyDto;
+            }).toList();
+
+            //设置回复集合
+            commentDto.setReplies(repliesDto);
+
+            return commentDto;
+
+        }).toList();
+
+        commentPage.setRecords(commentDtoList);
+
+        //数据传回前端
+        model.addAttribute("page", commentPage);
 
         return "/site/discuss-detail";
     }

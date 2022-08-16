@@ -8,5 +8,8 @@ import lombok.EqualsAndHashCode;
 @Data
 @EqualsAndHashCode(callSuper = true)
 public class DiscussPostDto extends DiscussPost {
+    /**
+     * 发帖子的用户
+     */
     private User user;
 }
