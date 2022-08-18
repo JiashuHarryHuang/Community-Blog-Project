@@ -15,6 +15,25 @@ import java.util.List;
  * @since 2022-07-26
  */
 public interface ICommentService extends IService<Comment> {
+    /**
+     * 分页查询评论
+     * @param entityType 评论帖子还是用户
+     * @param entityId 评论对象的id
+     * @param page 分页查询对象
+     */
     void findCommentsByEntity(int entityType, int entityId, MyPage<Comment> page);
+
+    /**
+     * 列表查询评论
+     * @param entityType 评论帖子还是用户
+     * @param entityId 评论对象的id
+     * @return 评论列表
+     */
     List<Comment> findCommentsByEntity(int entityType, int entityId);
+
+    /**
+     * 添加评论
+     * @param comment 评论对象
+     */
+    void addComment(Comment comment);
 }

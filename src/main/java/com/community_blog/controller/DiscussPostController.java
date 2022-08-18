@@ -146,7 +146,7 @@ public class DiscussPostController {
             return JSON.toJSONString(Result.error("你还没有登录哦!"));
         }
 
-        //设置用户
+        //设置用户并过滤敏感词
         discussPost.setUserId(user.getId());
         discussPost.setContent(filteredContent);
         discussPost.setTitle(filteredTitle);
