@@ -1,0 +1,79 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.community_blog.dao.MessageDao">
+    <sql id="selectFields">
+        id, from_id, to_id, conversation_id, content, status, create_time
+    </sql>
+
+    <sql id="insertFields">
+        from_id, to_id, conversation_id, content, status, create_time
+    </sql>
+
+    <!--resultmap-->
+    <resultMap id="messageResultMap" type="Message">
+        <result column="from_id" property="fromId"/>
+        <result column="to_id" property="toId"/>
+        <result column="conversation_id" property="conversationId"/>
+        <result column="create_time" property="createTime"/>
+    </resultMap>
+
+    <!--查询消息列表，每个会话只返回一条最新的私信.-->
+    <select id="selectConversations" resultMap="messageResultMap">
+        select <include refid="selectFields"/>
+        from message
+        where id in (
+            select max(id) from message
+            where status != 2
+            and from_id != 1
+            and (from_id = #{userId} or to_id = #{userId})
+            group by conversation_id
+        )
+        order by id desc
+        limit #{current}, #{size}
+    </select>
+
+    <!--查询消息列表的数量-->
+    <select id="selectConversationCount" resultType="java.lang.Integer">
+        select count(user_message.maxid) from (
+            select max(id) as maxid from message
+            where status != 2
+            and from_id != 1
+            and (from_id = #{userId} or to_id = #{userId})
+            group by conversation_id
+        ) as user_message
+    </select>
+
+    <!--查询具体某个会话的消息-->
+    <select id="selectMessages" resultMap="messageResultMap">
+        select <include refid="selectFields"/>
+        from message
+        where status != 2
+        and from_id != 1
+        and conversation_id = #{conversationId}
+        order by id desc
+        limit #{current}, #{size}
+    </select>
+
+    <!--查询某个会话的消息数量-->
+    <select id="selectMessagesCount" resultType="java.lang.Integer">
+        select count(id)
+        from message
+        where status != 2
+        and from_id != 1
+        and conversation_id = #{conversationId}
+    </select>
+
+    <!--查询某个会话/所有会话的未读消息数量-->
+    <select id="selectUnreadMessageCount" resultType="java.lang.Integer">
+        select count(id)
+        from message
+        where status = 0
+        and from_id != 1
+        and to_id = #{userId}
+        <if test="conversationId!=null">
+            and conversation_id = #{conversationId}
+        </if>
+    </select>
+
+
+</mapper>

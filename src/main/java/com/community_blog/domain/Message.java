@@ -26,10 +26,21 @@ public class Message implements Serializable {
     @TableId(value = "id", type = IdType.AUTO)
     private Integer id;
 
+    /**
+     * 发送者用户id
+     * 1-系统提示
+     */
     private Integer fromId;
 
+    /**
+     * 接收者用户id
+     */
     private Integer toId;
 
+    /**
+     * 会话id，由fromId_toId/toId_fromId组成
+     * 但先后顺序不代表谁发的消息
+     */
     private String conversationId;
 
     private String content;

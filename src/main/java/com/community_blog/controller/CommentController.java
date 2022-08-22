@@ -32,9 +32,17 @@ public class CommentController {
     @Autowired
     private HostHolder hostHolder;
 
+    /**
+     * 添加评论
+     * @param postId 帖子id
+     * @param current 当前页
+     * @param comment 评论
+     * @return 帖子页面
+     */
     @LoginRequired
     @PostMapping("/add/{postId}/{current}")
-    public String addComment(@PathVariable("postId") int postId, @PathVariable("current") Long current, Comment comment) {
+    public String addComment(@PathVariable("postId") int postId,
+                             @PathVariable("current") Long current, Comment comment) {
         log.info("添加评论");
         comment.setUserId(hostHolder.getUser().getId());
         comment.setStatus(0);

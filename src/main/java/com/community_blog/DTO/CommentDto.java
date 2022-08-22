@@ -19,7 +19,7 @@ public class CommentDto extends Comment {
     private User commenter;
 
     /**
-     * 评论的对象，如果直接评论帖子则为null
+     * 评论的对象，如果没有针对的用户则为null
      */
     private User target;
 

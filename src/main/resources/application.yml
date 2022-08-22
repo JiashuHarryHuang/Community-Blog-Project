@@ -26,3 +26,7 @@ community:
     img: D:/Harry/Dark-Horse/Projects/community_blog/img
     postPage: /discussPost/index
     commentPage: /discussPost/detail/
+    messagePage: /message/page
+mybatis-plus:
+  mapper-locations: classpath:mapper/**.xml
+  type-aliases-package: com.community_blog.domain

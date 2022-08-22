@@ -28,7 +28,7 @@
 								<a class="nav-link" th:href="@{/discussPost/index}">首页</a>
 							</li>
 							<li class="nav-item ml-3 btn-group-vertical" th:if="${loginUser != null}">
-								<a class="nav-link position-relative" href="site/letter.html">消息
+								<a class="nav-link position-relative" th:href="@{/message/page}">消息
 									<span class="badge badge-danger">12</span>
 								</a>
 							</li>
@@ -152,7 +152,7 @@
 							<div class="text-muted font-size-12">
 								<u class="mr-3" th:utext="${discussPost.user.username}">寒江雪</u> 发布于
 								<!--用于改变LocalDateTime类型数据的格式-->
-								<b th:text="${#temporals.format(discussPost.createTime, 'dd-MM-yyyy HH:mm:ss')}">
+								<b th:text="${#temporals.format(discussPost.createTime, 'yyyy-MM-dd HH:mm:ss')}">
 									2019-04-15 15:32:18
 								</b>
 								<ul class="d-inline float-right">
