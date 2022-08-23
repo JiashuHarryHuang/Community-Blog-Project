@@ -28,4 +28,6 @@ public interface IUserService extends IService<User> {
      * @return 验证结果
      */
     Map<String, String> register(User user);
+
+    User getUserByUsername(String username);
 }

@@ -22,7 +22,12 @@ public class MessageDto extends Message {
     private int unreadCount;
 
     /**
-     * 当前会话的接收者一方
+     * 当前会话的接收者
      */
     private User target;
+
+    /**
+     * 当前会话的发送者
+     */
+    private User fromUser;
 }

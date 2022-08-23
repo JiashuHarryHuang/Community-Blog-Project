@@ -27,6 +27,7 @@ community:
     postPage: /discussPost/index
     commentPage: /discussPost/detail/
     messagePage: /message/page
+    messageDetailPage: /message/detail/
 mybatis-plus:
   mapper-locations: classpath:mapper/**.xml
   type-aliases-package: com.community_blog.domain

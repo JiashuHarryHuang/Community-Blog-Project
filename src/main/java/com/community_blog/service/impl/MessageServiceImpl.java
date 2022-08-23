@@ -39,13 +39,48 @@ public class MessageServiceImpl extends ServiceImpl<MessageDao, Message> impleme
         page.setRecords(messages);
     }
 
+    /**
+     * 分页查询某个会话的所有私信
+     * @param conversationId 会话id
+     * @param page 分页对象
+     */
+    @Override
+    public void selectMessages(String conversationId, MyPage<Message> page) {
+        page.setTotal(messageDao.selectMessagesCount(conversationId));
+        List<Message> messages = messageDao.selectMessages(conversationId,
+                (int) page.getCurrent() - 1, (int) page.getSize());
+
+        page.setRecords(messages);
+    }
+
+    /**
+     * 获取某个会话的私信总数
+     * @param conversationId 会话id
+     * @return 私信总数
+     */
     @Override
     public int selectMessagesCount(String conversationId) {
         return messageDao.selectMessagesCount(conversationId);
     }
 
+    /**
+     * 获取某个会话的未读消息数量
+     * @param userId 当前用户
+     * @param conversationId 会话id
+     * @return 未读消息数量
+     */
     @Override
     public int selectUnreadMessageCount(int userId, String conversationId) {
         return messageDao.selectUnreadMessageCount(userId, conversationId);
+    }
+
+    /**
+     * 更新消息状态为已读
+     * @param messages 需要更新的消息集合
+     */
+    @Override
+    public void readMessages(List<Message> messages) {
+        messages.forEach(message -> message.setStatus(1));
+        this.updateBatchById(messages);
     }
 }

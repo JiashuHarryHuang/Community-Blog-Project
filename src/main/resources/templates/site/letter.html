@@ -84,7 +84,7 @@
 						<span class="badge badge-danger" th:text="${message.unreadCount}"
 							  th:if="${message.unreadCount!=0}">3</span>
 						<a href="profile.html">
-							<img src="http://images.nowcoder.com/head/8t.png" class="mr-4 rounded-circle user-header" alt="用户头像" >
+							<img th:src="${message.target.headerUrl}" class="mr-4 rounded-circle user-header" alt="用户头像" >
 						</a>
 						<div class="media-body">
 							<h6 class="mt-0 mb-3">
@@ -95,7 +95,7 @@
 								</span>
 							</h6>
 							<div>
-								<a href="letter-detail.html" th:text="${message.content}">米粉车, 你来吧!</a>
+								<a th:href="@{|/message/detail/${message.conversationId}|}" th:text="${message.content}">米粉车, 你来吧!</a>
 								<ul class="d-inline font-size-12 float-right">
 									<li class="d-inline ml-2">
 										<a href="#" class="text-primary">共<i th:text="${message.messageCount}">5</i>条会话</a>
@@ -112,7 +112,7 @@
 		</div>
 
 		<!-- 尾部 -->
-		<footer class="bg-dark" th:replace="index::footer">
+		<footer class="bg-dark" th:if="${page.total > 0}" th:replace="index::footer">
 		</footer>
 	</div>
 

@@ -79,4 +79,12 @@ public class UserServiceImpl extends ServiceImpl<UserDao, User> implements IUser
 
         return messages;
     }
+
+    @Override
+    public User getUserByUsername(String username) {
+        LambdaQueryWrapper<User> userLambdaQueryWrapper = new LambdaQueryWrapper<>();
+        userLambdaQueryWrapper.eq(User::getUsername, username)
+                .eq(User::getStatus, 1);
+        return this.getOne(userLambdaQueryWrapper);
+    }
 }
