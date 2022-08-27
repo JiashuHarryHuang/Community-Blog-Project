@@ -29,6 +29,16 @@ public class CommentDto extends Comment {
     private List<CommentDto> replies;
 
     /**
+     * 点赞数量
+     */
+    private long likeCount;
+
+    /**
+     * 点赞状态
+     */
+    private int likeStatus;
+
+    /**
      * 获取回复数量
      * @return 回复数量
      */

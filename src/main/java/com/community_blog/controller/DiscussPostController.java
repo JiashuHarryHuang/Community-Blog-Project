@@ -114,6 +114,10 @@ public class DiscussPostController {
                 User user = userService.getById(post.getUserId());
                 discussPostDto.setUser(user);
 
+                //给likeCount赋值
+                long likeCount = discussPostService.findEntityLikeCount(ENTITY_TYPE_POST, discussPostDto.getId());
+                discussPostDto.setLikeCount(likeCount);
+
                 return discussPostDto;
             }).toList();
 
@@ -170,11 +174,11 @@ public class DiscussPostController {
     public String getDiscussPost(@PathVariable int postId, Model model, MyPage<Comment> page) {
         log.info("获取帖子详情：{}", postId);
         //获取帖子
-        DiscussPost discussPost = discussPostService.getById(postId);
-        model.addAttribute("post", discussPost);
+        DiscussPostDto discussPostDto = discussPostService.getByIdWithLike(postId);
+        model.addAttribute("post", discussPostDto);
 
         //获取用户
-        User user = userService.getById(discussPost.getUserId());
+        User user = userService.getById(discussPostDto.getUserId());
         model.addAttribute("user", user);
 
         //设置MyPage对象
@@ -182,7 +186,7 @@ public class DiscussPostController {
         page.setPath(commentPagePath + postId);
 
         //分页查询帖子评论
-        commentService.findCommentsByEntity(ENTITY_TYPE_POST, discussPost.getId(), page);
+        commentService.findCommentsByEntity(ENTITY_TYPE_POST, discussPostDto.getId(), page);
 
         //数据传输对象
         MyPage<CommentDto> commentPage = new MyPage<>();
@@ -197,6 +201,14 @@ public class DiscussPostController {
             //设置发表评论的用户
             commentDto.setCommenter(userService.getById(commentDto.getUserId()));
 
+            //设置评论点赞数量
+            commentDto.setLikeCount(discussPostService.findEntityLikeCount(ENTITY_TYPE_COMMENT, comment.getId()));
+
+            //设置评论点赞状态
+            commentDto.setLikeStatus(hostHolder.getUser() == null ? 0 :
+                    discussPostService.findEntityLikeStatus(hostHolder.getUser().getId(),
+                            ENTITY_TYPE_COMMENT, comment.getId()));
+
             //查询回复
             List<Comment> replies = commentService.findCommentsByEntity(ENTITY_TYPE_COMMENT, comment.getId());
 
@@ -207,6 +219,14 @@ public class DiscussPostController {
 
                 //设置发表回复的用户
                 replyDto.setCommenter(userService.getById(commentDto.getUserId()));
+
+                //设置回复的点赞数量
+                replyDto.setLikeCount(discussPostService.findEntityLikeCount(ENTITY_TYPE_COMMENT, reply.getId()));
+
+                //设置评论点赞状态
+                commentDto.setLikeStatus(hostHolder.getUser() == null ? 0 :
+                        discussPostService.findEntityLikeStatus(hostHolder.getUser().getId(),
+                                ENTITY_TYPE_COMMENT, reply.getId()));
 
                 //设置回复的对象，如果id为0则设置成null
                 User target = reply.getTargetId() == 0 ? null : userService.getById(reply.getTargetId());
@@ -228,5 +248,34 @@ public class DiscussPostController {
         model.addAttribute("page", commentPage);
 
         return "/site/discuss-detail";
+    }
+
+    /**
+     * 点赞功能
+     * @param entityType 实体类型
+     * @param entityId 实体id
+     * @return 点赞成功信息以及点赞数据
+     */
+    @PostMapping("/like")
+    @ResponseBody
+    public String like(int entityType, int entityId) {
+        //获取登录用户
+        User user = hostHolder.getUser();
+        int userId = user.getId();
+
+        //点赞
+        discussPostService.like(userId, entityType, entityId);
+
+        //查询点赞数
+        long likeCount = discussPostService.findEntityLikeCount(entityType, entityId);
+
+        //查询用户点赞状态
+        int likeStatus = discussPostService.findEntityLikeStatus(userId, entityType, entityId);
+
+        //返回数据给前端
+        Map<String, Object> map = new HashMap<>();
+        map.put("likeCount", likeCount);
+        map.put("likeStatus", likeStatus);
+        return JSON.toJSONString(Result.success(map));
     }
 }
