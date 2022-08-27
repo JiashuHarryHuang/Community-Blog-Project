@@ -2,7 +2,7 @@ package com.community_blog.controller;
 
 
 import com.baomidou.mybatisplus.core.conditions.query.LambdaQueryWrapper;
-import com.community_blog.DTO.UserDto;
+import com.community_blog.dto.UserDto;
 import com.community_blog.domain.LoginTicket;
 import com.community_blog.domain.User;
 import com.community_blog.service.ILoginTicketService;
@@ -12,7 +12,6 @@ import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
-import org.springframework.util.DigestUtils;
 import org.springframework.web.bind.annotation.*;
 
 import javax.imageio.ImageIO;

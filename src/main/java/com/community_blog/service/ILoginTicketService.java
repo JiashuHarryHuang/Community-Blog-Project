@@ -1,6 +1,6 @@
 package com.community_blog.service;
 
-import com.community_blog.DTO.UserDto;
+import com.community_blog.dto.UserDto;
 import com.community_blog.domain.LoginTicket;
 import com.baomidou.mybatisplus.extension.service.IService;
 

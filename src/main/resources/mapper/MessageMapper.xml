@@ -22,6 +22,7 @@
         select <include refid="selectFields"/>
         from message
         where id in (
+            <!--对于每个会话，返回最新的那条信息的id-->
             select max(id) from message
             where status != 2
             and from_id != 1
@@ -35,6 +36,7 @@
     <!--查询消息列表的数量-->
     <select id="selectConversationCount" resultType="java.lang.Integer">
         select count(user_message.maxid) from (
+            <!--对于每个会话，返回最新的那条信息的id-->
             select max(id) as maxid from message
             where status != 2
             and from_id != 1

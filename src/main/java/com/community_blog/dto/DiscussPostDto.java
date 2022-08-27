@@ -1,4 +1,4 @@
-package com.community_blog.DTO;
+package com.community_blog.dto;
 
 import com.community_blog.domain.DiscussPost;
 import com.community_blog.domain.User;

@@ -3,8 +3,8 @@ package com.community_blog.controller;
 
 import com.alibaba.fastjson.JSON;
 import com.baomidou.mybatisplus.core.conditions.query.LambdaQueryWrapper;
-import com.community_blog.DTO.CommentDto;
-import com.community_blog.DTO.DiscussPostDto;
+import com.community_blog.dto.CommentDto;
+import com.community_blog.dto.DiscussPostDto;
 import com.community_blog.annotation.LoginRequired;
 import com.community_blog.common.Result;
 import com.community_blog.domain.Comment;

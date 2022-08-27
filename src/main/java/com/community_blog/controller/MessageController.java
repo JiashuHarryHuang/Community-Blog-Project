@@ -2,7 +2,7 @@ package com.community_blog.controller;
 
 
 import com.alibaba.fastjson.JSON;
-import com.community_blog.DTO.MessageDto;
+import com.community_blog.dto.MessageDto;
 import com.community_blog.annotation.LoginRequired;
 import com.community_blog.common.MyPage;
 import com.community_blog.common.Result;

@@ -1,7 +1,7 @@
 package com.community_blog.service.impl;
 
 import com.baomidou.mybatisplus.core.conditions.query.LambdaQueryWrapper;
-import com.community_blog.DTO.UserDto;
+import com.community_blog.dto.UserDto;
 import com.community_blog.domain.LoginTicket;
 import com.community_blog.dao.LoginTicketDao;
 import com.community_blog.domain.User;
