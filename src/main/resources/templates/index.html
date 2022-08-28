@@ -44,7 +44,7 @@
 									<img th:src="${loginUser.headerUrl}" class="rounded-circle" style="width:30px;"/>
 								</a>
 								<div class="dropdown-menu" aria-labelledby="navbarDropdown">
-									<a class="dropdown-item text-center" href="site/profile.html">个人主页</a>
+									<a class="dropdown-item text-center" th:href="@{|/user/profile/${loginUser.id}|}">个人主页</a>
 									<a class="dropdown-item text-center" th:href="@{/user/setting}">账号设置</a>
 									<a class="dropdown-item text-center" th:href="@{/loginTicket/logout}">退出登录</a>
 									<div class="dropdown-divider"></div>
@@ -131,7 +131,7 @@
 				<ul class="list-unstyled">
 					<!--遍历map集合-->
 					<li class="media pb-3 pt-3 mb-3 border-bottom" th:each="discussPost:${page.records}">
-						<a href="site/profile.html">
+						<a th:href="@{|/user/profile/${discussPost.userId}|}">
 							<!--动态获取用户头像-->
 							<img th:src="${discussPost.user.headerUrl}" class="mr-4 rounded-circle"
 								 alt="用户头像" style="width:50px;height:50px;">

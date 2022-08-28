@@ -2,6 +2,7 @@ package com.community_blog.controller;
 
 import com.community_blog.annotation.LoginRequired;
 import com.community_blog.domain.User;
+import com.community_blog.service.IDiscussPostService;
 import com.community_blog.service.IUserService;
 import com.community_blog.util.HostHolder;
 import com.community_blog.util.MailClient;
@@ -44,6 +45,9 @@ public class UserController {
 
     @Autowired
     private IUserService userService;
+
+    @Autowired
+    private IDiscussPostService discussPostService;
 
     /**
      * 发送邮箱工具
@@ -251,5 +255,27 @@ public class UserController {
         } catch (IOException e) {
             log.error("读取头像失败: " + e.getMessage());
         }
+    }
+
+    /**
+     * 个人主页
+     * @param userId 用户id
+     * @param model 模板引擎
+     * @return 个人主页页面
+     */
+    @GetMapping("/profile/{userId}")
+    public String getProfilePage(@PathVariable("userId") int userId, Model model) {
+        User user = userService.getById(userId);
+        if (user == null) {
+            throw new RuntimeException("该用户不存在!");
+        }
+
+        // 用户
+        model.addAttribute("user", user);
+        // 点赞数量
+        int likeCount = discussPostService.findUserLikeCount(userId);
+        model.addAttribute("likeCount", likeCount);
+
+        return "/site/profile";
     }
 }
