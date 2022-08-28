@@ -9,7 +9,10 @@ import com.community_blog.util.HostHolder;
 import com.community_blog.util.RedisKeyUtil;
 import org.springframework.beans.BeanUtils;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.dao.DataAccessException;
+import org.springframework.data.redis.core.RedisOperations;
 import org.springframework.data.redis.core.RedisTemplate;
+import org.springframework.data.redis.core.SessionCallback;
 import org.springframework.stereotype.Service;
 
 import static com.community_blog.util.CommunnityConstant.ENTITY_TYPE_POST;
@@ -35,21 +38,37 @@ public class DiscussPostServiceImpl extends ServiceImpl<DiscussPostDao, DiscussP
      * @param userId 点赞的用户
      * @param entityType 点赞的是帖子还是评论
      * @param entityId 点赞的实体id
+     * @param entityUserId 发布帖子/评论的用户id
      */
     @Override
-    public void like(int userId, int entityType, int entityId) {
-        String entityLikeKey = RedisKeyUtil.getEntityLikeKey(entityType, entityId);
+    public void like(int userId, int entityType, int entityId, int entityUserId) {
+        redisTemplate.execute(new SessionCallback() {
+            @Override
+            public Object execute(RedisOperations operations) throws DataAccessException {
+                String entityLikeKey = RedisKeyUtil.getEntityLikeKey(entityType, entityId);
+                String userLikeKey = RedisKeyUtil.getUserLikeKey(entityUserId);
 
-        //判断当前用户有没有点过赞
-        boolean isMember = redisTemplate.opsForSet().isMember(entityLikeKey, userId);
+                //判断当前用户有没有点过赞
+                boolean isMember = operations.opsForSet().isMember(entityLikeKey, userId);
 
-        if (isMember) {
-            //点过赞，则取消点赞，将userId删除
-            redisTemplate.opsForSet().remove(entityLikeKey, userId);
-        } else {
-            //没点赞，则把userId加入集合
-            redisTemplate.opsForSet().add(entityLikeKey, userId);
-        }
+                operations.multi();
+
+                if (isMember) {
+                    //点过赞，则取消点赞，将userId删除
+                    operations.opsForSet().remove(entityLikeKey, userId);
+                    //并对该实体用户的点赞数减一
+                    operations.opsForValue().decrement(userLikeKey);
+                } else {
+                    //没点赞，则把userId加入集合
+                    operations.opsForSet().add(entityLikeKey, userId);
+                    //并对该实体用户的点赞数加一
+                    operations.opsForValue().increment(userLikeKey);
+                }
+
+                return operations.exec();
+            }
+        });
+
     }
 
     /**
@@ -98,5 +117,17 @@ public class DiscussPostServiceImpl extends ServiceImpl<DiscussPostDao, DiscussP
                 this.findEntityLikeStatus(hostHolder.getUser().getId(), ENTITY_TYPE_POST, id);
         discussPostDto.setLikeStatus(likeStatus);
         return discussPostDto;
+    }
+
+    /**
+     * 查询用户收到的赞
+     * @param userId 当前用户id
+     * @return 用户收到的赞
+     */
+    @Override
+    public int findUserLikeCount(int userId) {
+        String userLikeKey = RedisKeyUtil.getUserLikeKey(userId);
+        Integer count = (Integer) redisTemplate.opsForValue().get(userLikeKey);
+        return count == null ? 0 : count;
     }
 }

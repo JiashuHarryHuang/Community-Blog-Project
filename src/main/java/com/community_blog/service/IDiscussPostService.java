@@ -19,8 +19,9 @@ public interface IDiscussPostService extends IService<DiscussPost> {
      * @param userId 点赞的用户
      * @param entityType 点赞的是帖子还是评论
      * @param entityId 点赞的实体id
+     * @param entityUserId 发布帖子/评论的用户id
      */
-    void like(int userId, int entityType, int entityId);
+    void like(int userId, int entityType, int entityId, int entityUserId);
 
     /**
      * 查询某个实体的点赞数量
@@ -47,4 +48,11 @@ public interface IDiscussPostService extends IService<DiscussPost> {
      * @return 帖子DTO对象
      */
     DiscussPostDto getByIdWithLike(int id);
+
+    /**
+     * 查询用户收到的赞
+     * @param userId 当前用户id
+     * @return 用户收到的赞
+     */
+    int findUserLikeCount(int userId);
 }

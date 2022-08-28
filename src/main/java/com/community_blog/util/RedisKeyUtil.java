@@ -18,4 +18,13 @@ public class RedisKeyUtil {
     public static String getEntityLikeKey(int entityType, int entityId) {
         return PREFIX_ENTITY_LIKE + SPLIT + entityType + SPLIT + entityId;
     }
+
+    /**
+     * 根据用户id生成对应的key
+     * @param userId 用户id
+     * @return 对应的key
+     */
+    public static String getUserLikeKey(int userId) {
+        return PREFIX_USER_LIKE + SPLIT + userId;
+    }
 }

@@ -254,17 +254,18 @@ public class DiscussPostController {
      * 点赞功能
      * @param entityType 实体类型
      * @param entityId 实体id
+     * @param entityUserId 发布帖子/评论的用户id
      * @return 点赞成功信息以及点赞数据
      */
     @PostMapping("/like")
     @ResponseBody
-    public String like(int entityType, int entityId) {
+    public String like(int entityType, int entityId, int entityUserId) {
         //获取登录用户
         User user = hostHolder.getUser();
         int userId = user.getId();
 
         //点赞
-        discussPostService.like(userId, entityType, entityId);
+        discussPostService.like(userId, entityType, entityId, entityUserId);
 
         //查询点赞数
         long likeCount = discussPostService.findEntityLikeCount(entityType, entityId);
