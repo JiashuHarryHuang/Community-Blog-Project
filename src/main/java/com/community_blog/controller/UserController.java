@@ -3,6 +3,7 @@ package com.community_blog.controller;
 import com.community_blog.annotation.LoginRequired;
 import com.community_blog.domain.User;
 import com.community_blog.service.IDiscussPostService;
+import com.community_blog.service.IFollowService;
 import com.community_blog.service.IUserService;
 import com.community_blog.util.HostHolder;
 import com.community_blog.util.MailClient;
@@ -23,12 +24,11 @@ import javax.servlet.http.HttpServletResponse;
 import java.io.File;
 import java.io.FileInputStream;
 import java.io.IOException;
-import java.io.OutputStream;
 import java.util.Map;
 import java.util.Random;
 import java.util.UUID;
 
-import static com.community_blog.util.CommunnityConstant.*;
+import static com.community_blog.util.CommunityConstant.*;
 
 /**
  * <p>
@@ -48,6 +48,9 @@ public class UserController {
 
     @Autowired
     private IDiscussPostService discussPostService;
+
+    @Autowired
+    private IFollowService followService;
 
     /**
      * 发送邮箱工具
@@ -275,6 +278,18 @@ public class UserController {
         // 点赞数量
         int likeCount = discussPostService.findUserLikeCount(userId);
         model.addAttribute("likeCount", likeCount);
+        //关注数量
+        long followeeCount = followService.findFolloweeCount(userId, ENTITY_TYPE_USER);
+        model.addAttribute("followeeCount", followeeCount);
+        //粉丝数量
+        long followerCount = followService.findFollowerCount(ENTITY_TYPE_USER, userId);
+        model.addAttribute("followerCount", followerCount);
+        // 是否已关注
+        boolean hasFollowed = false;
+        if (hostHolder.getUser() != null) {
+            hasFollowed = followService.hasFollowed(hostHolder.getUser().getId(), ENTITY_TYPE_USER, userId);
+        }
+        model.addAttribute("hasFollowed", hasFollowed);
 
         return "/site/profile";
     }

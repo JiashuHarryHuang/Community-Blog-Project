@@ -15,7 +15,7 @@ import org.springframework.data.redis.core.RedisTemplate;
 import org.springframework.data.redis.core.SessionCallback;
 import org.springframework.stereotype.Service;
 
-import static com.community_blog.util.CommunnityConstant.ENTITY_TYPE_POST;
+import static com.community_blog.util.CommunityConstant.ENTITY_TYPE_POST;
 
 /**
  * <p>

@@ -18,7 +18,7 @@ import org.springframework.web.util.HtmlUtils;
 
 import java.util.List;
 
-import static com.community_blog.util.CommunnityConstant.ENTITY_TYPE_POST;
+import static com.community_blog.util.CommunityConstant.ENTITY_TYPE_POST;
 
 /**
  * <p>

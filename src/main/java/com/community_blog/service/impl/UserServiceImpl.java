@@ -10,7 +10,7 @@ import org.springframework.stereotype.Service;
 import java.util.HashMap;
 import java.util.Map;
 
-import static com.community_blog.util.CommunnityConstant.*;
+import static com.community_blog.util.CommunityConstant.*;
 
 /**
  * <p>

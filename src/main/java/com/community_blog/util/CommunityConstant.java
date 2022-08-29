@@ -1,6 +1,6 @@
 package com.community_blog.util;
 
-public interface CommunnityConstant {
+public interface CommunityConstant {
     /**
      * 激活成功
      */
@@ -35,4 +35,9 @@ public interface CommunnityConstant {
      * 实体类型为评论
      */
     int ENTITY_TYPE_COMMENT = 2;
+
+    /**
+     * 实体类型为用户
+     */
+    int ENTITY_TYPE_USER = 3;
 }

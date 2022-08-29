@@ -27,8 +27,8 @@ import java.util.*;
 
 import com.community_blog.common.MyPage;
 
-import static com.community_blog.util.CommunnityConstant.ENTITY_TYPE_COMMENT;
-import static com.community_blog.util.CommunnityConstant.ENTITY_TYPE_POST;
+import static com.community_blog.util.CommunityConstant.ENTITY_TYPE_COMMENT;
+import static com.community_blog.util.CommunityConstant.ENTITY_TYPE_POST;
 
 /**
  * <p>

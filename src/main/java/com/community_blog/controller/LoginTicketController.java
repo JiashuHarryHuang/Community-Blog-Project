@@ -25,8 +25,8 @@ import java.time.LocalDateTime;
 import java.util.Map;
 import java.util.UUID;
 
-import static com.community_blog.util.CommunnityConstant.DEFAULT_EXPIRED_SECONDS;
-import static com.community_blog.util.CommunnityConstant.REMEMBER_EXPIRED_SECONDS;
+import static com.community_blog.util.CommunityConstant.DEFAULT_EXPIRED_SECONDS;
+import static com.community_blog.util.CommunityConstant.REMEMBER_EXPIRED_SECONDS;
 
 /**
  * <p>
