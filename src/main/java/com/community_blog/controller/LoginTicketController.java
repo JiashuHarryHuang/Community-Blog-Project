@@ -7,9 +7,12 @@ import com.community_blog.domain.LoginTicket;
 import com.community_blog.domain.User;
 import com.community_blog.service.ILoginTicketService;
 import com.community_blog.service.IUserService;
+import com.community_blog.util.RedisKeyUtil;
 import com.google.code.kaptcha.Producer;
 import lombok.extern.slf4j.Slf4j;
+import org.apache.commons.lang3.StringUtils;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.data.redis.core.RedisTemplate;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
 import org.springframework.web.bind.annotation.*;
@@ -24,6 +27,7 @@ import java.io.OutputStream;
 import java.time.LocalDateTime;
 import java.util.Map;
 import java.util.UUID;
+import java.util.concurrent.TimeUnit;
 
 import static com.community_blog.util.CommunityConstant.DEFAULT_EXPIRED_SECONDS;
 import static com.community_blog.util.CommunityConstant.REMEMBER_EXPIRED_SECONDS;
@@ -42,6 +46,9 @@ import static com.community_blog.util.CommunityConstant.REMEMBER_EXPIRED_SECONDS
 public class LoginTicketController {
     @Autowired
     private IUserService userService;
+
+    @Autowired
+    private RedisTemplate redisTemplate;
 
     /**
      * 验证码工具
@@ -66,16 +73,26 @@ public class LoginTicketController {
      * 生成验证码
      *
      * @param response 响应数据
-     * @param session  会话
      */
     @GetMapping("/kaptcha")
-    public void getKaptcha(HttpServletResponse response, HttpSession session) {
+    public void getKaptcha(HttpServletResponse response) {
         // 生成验证码
         String text = kaptchaProducer.createText();
         BufferedImage image = kaptchaProducer.createImage(text);
 
         //把验证码存入session
-        session.setAttribute("code", text);
+//        session.setAttribute("code", text);
+
+        //生成临时凭证
+        String tempKey = UUID.randomUUID().toString();
+        Cookie cookie = new Cookie("tempKey", tempKey);
+        cookie.setMaxAge(60);
+        cookie.setPath("/");
+        response.addCookie(cookie);
+
+        //把验证码存入redis
+        String redisKey = RedisKeyUtil.getKaptchaKey(tempKey);
+        redisTemplate.opsForValue().set(redisKey, text, 60, TimeUnit.SECONDS);
 
         // 将图片返回给浏览器
         response.setContentType("image/png");
@@ -93,12 +110,12 @@ public class LoginTicketController {
      *
      * @param model    模板
      * @param userDto  前端数据封装对象
-     * @param session  会话
      * @param response 响应
      * @return 登录成功/失败页面
      */
     @PostMapping("/login")
-    public String login(Model model, UserDto userDto, HttpSession session, HttpServletResponse response) {
+    public String login(Model model, UserDto userDto, HttpServletResponse response,
+                        @CookieValue("tempKey") String tempKey) {
         log.info("登录操作");
 
         //数据回显
@@ -122,9 +139,15 @@ public class LoginTicketController {
         User user = (User) result.get("user");
 
         //验证验证码
-        String code = (String) session.getAttribute("code");
+        //String code = (String) session.getAttribute("code");
+        String code = null;
+        if (StringUtils.isNotBlank(tempKey)) {
+            String verifyCodeKey = RedisKeyUtil.getKaptchaKey(tempKey);
+            code = (String) redisTemplate.opsForValue().get(verifyCodeKey);
+        }
+
         String verifycode = userDto.getVerifycode();
-        if (!code.equalsIgnoreCase(verifycode)) {
+        if (code == null || !code.equalsIgnoreCase(verifycode)) {
             model.addAttribute("verifycodeMsg", "验证码不正确!");
             return "/site/login";
         }
@@ -138,7 +161,11 @@ public class LoginTicketController {
         loginTicket.setTicket(String.valueOf(UUID.randomUUID()));
         loginTicket.setStatus(0);
         loginTicket.setExpired(LocalDateTime.now().plusSeconds(expiredTime));
-        loginTicketService.save(loginTicket);
+//        loginTicketService.save(loginTicket);
+
+        //登录凭证存入redis
+        String ticketKey = RedisKeyUtil.getTicketKey(loginTicket.getTicket());
+        redisTemplate.opsForValue().set(ticketKey, loginTicket);
 
         //生成cookie
         Cookie cookie = new Cookie("ticket", loginTicket.getTicket());
@@ -159,14 +186,13 @@ public class LoginTicketController {
     public String logout(@CookieValue("ticket") String ticket) {
         log.info("登出操作");
 
-        //更新状态：update login_ticket set status = 1 where ticket = ?
-        LoginTicket loginTicket = new LoginTicket();
-        loginTicket.setTicket(ticket);
+        //loginTicketService.update(loginTicket, loginTicketLambdaQueryWrapper);
+        //在redis中更新数据
+        String ticketKey = RedisKeyUtil.getTicketKey(ticket);
+        LoginTicket loginTicket = (LoginTicket) redisTemplate.opsForValue().get(ticketKey);
+        assert loginTicket != null;
         loginTicket.setStatus(1);
-        LambdaQueryWrapper<LoginTicket> loginTicketLambdaQueryWrapper = new LambdaQueryWrapper<>();
-        loginTicketLambdaQueryWrapper.eq(LoginTicket::getTicket, ticket);
-
-        loginTicketService.update(loginTicket, loginTicketLambdaQueryWrapper);
+        redisTemplate.opsForValue().set(ticketKey, loginTicket);
 
         return "redirect:/loginTicket/login";
     }

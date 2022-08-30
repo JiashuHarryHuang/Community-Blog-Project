@@ -20,6 +20,9 @@ spring:
         smtp:
           ssl:
             enable: true
+  cache:
+    redis:
+      time-to-live: 1800000 #缓存数据过期时间
   redis:
     database: 2
     host: localhost

@@ -15,6 +15,6 @@ public class CommonController {
      */
     @GetMapping("/error")
     public String getErrorPage() {
-        return "/error/500";
+        return "/site/error/500";
     }
 }

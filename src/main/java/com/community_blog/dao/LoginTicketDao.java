@@ -11,6 +11,7 @@ import com.baomidou.mybatisplus.core.mapper.BaseMapper;
  * @author Harry
  * @since 2022-07-26
  */
+@Deprecated //表示禁用这个数据层，以redis代替
 public interface LoginTicketDao extends BaseMapper<LoginTicket> {
 
 }

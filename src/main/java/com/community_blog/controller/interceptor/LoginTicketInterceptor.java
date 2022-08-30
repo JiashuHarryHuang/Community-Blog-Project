@@ -7,7 +7,9 @@ import com.community_blog.service.ILoginTicketService;
 import com.community_blog.service.IUserService;
 import com.community_blog.util.CookieUtil;
 import com.community_blog.util.HostHolder;
+import com.community_blog.util.RedisKeyUtil;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.data.redis.core.RedisTemplate;
 import org.springframework.stereotype.Component;
 import org.springframework.web.servlet.HandlerInterceptor;
 import org.springframework.web.servlet.ModelAndView;
@@ -19,7 +21,7 @@ import java.time.LocalDateTime;
 @Component
 public class LoginTicketInterceptor implements HandlerInterceptor {
     @Autowired
-    private ILoginTicketService loginTicketService;
+    private RedisTemplate redisTemplate;
 
     @Autowired
     private IUserService userService;
@@ -41,10 +43,9 @@ public class LoginTicketInterceptor implements HandlerInterceptor {
         String ticket = CookieUtil.getValue(request, "ticket");
 
         if (ticket != null) {
-            // 查询凭证: select * from login_ticket where ticket = ?
-            LambdaQueryWrapper<LoginTicket> loginTicketLambdaQueryWrapper = new LambdaQueryWrapper<>();
-            loginTicketLambdaQueryWrapper.eq(LoginTicket::getTicket, ticket);
-            LoginTicket loginTicket = loginTicketService.getOne(loginTicketLambdaQueryWrapper);
+            // 查询凭证：从redis取
+            String ticketKey = RedisKeyUtil.getTicketKey(ticket);
+            LoginTicket loginTicket = (LoginTicket) redisTemplate.opsForValue().get(ticketKey);
             // 检查凭证是否有效
             if (loginTicket != null && loginTicket.getStatus() == 0 && loginTicket.getExpired().isAfter(LocalDateTime.now())) {
                 // 根据凭证查询用户: select * from user where id = {loginTicket.getUserId()}

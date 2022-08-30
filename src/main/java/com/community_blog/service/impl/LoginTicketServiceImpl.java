@@ -39,10 +39,7 @@ public class LoginTicketServiceImpl extends ServiceImpl<LoginTicketDao, LoginTic
         Map<String, Object> result = new HashMap<>();
         //查看用户是否存在
         String userName = userDto.getUsername();
-        //select * from user where username = ?
-        LambdaQueryWrapper<User> userLambdaQueryWrapper = new LambdaQueryWrapper<>();
-        userLambdaQueryWrapper.eq(User::getUsername, userName);
-        User user = userService.getOne(userLambdaQueryWrapper);
+        User user = userService.getUserByUsername(userName);
 
         if (user == null) { //账号不存在
             result.put("usernameMsg", "该账号不存在!");

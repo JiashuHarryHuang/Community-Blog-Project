@@ -5,8 +5,12 @@ import com.community_blog.domain.User;
 import com.community_blog.dao.UserDao;
 import com.community_blog.service.IUserService;
 import com.baomidou.mybatisplus.extension.service.impl.ServiceImpl;
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.cache.annotation.CacheEvict;
+import org.springframework.cache.annotation.Cacheable;
 import org.springframework.stereotype.Service;
 
+import java.io.Serializable;
 import java.util.HashMap;
 import java.util.Map;
 
@@ -22,6 +26,8 @@ import static com.community_blog.util.CommunityConstant.*;
  */
 @Service
 public class UserServiceImpl extends ServiceImpl<UserDao, User> implements IUserService {
+    @Autowired
+    private UserDao userDao;
 
     /**
      * 激活方法
@@ -46,6 +52,19 @@ public class UserServiceImpl extends ServiceImpl<UserDao, User> implements IUser
         }
 
         return ACTIVATION_FAILURE;
+    }
+
+    @Override
+    @Cacheable(value = "user", key="#userId", unless = "#result==null")
+    public User getById(Serializable userId) {
+        return userDao.selectById(userId);
+    }
+
+    @Override
+    @CacheEvict(value = "user", key="#user.id")
+    public boolean updateById(User user) {
+        userDao.updateById(user);
+        return true;
     }
 
     /**

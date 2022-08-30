@@ -100,9 +100,9 @@
 
 		<!--commons lang-->
 		<dependency>
-			<groupId>com.lispcast</groupId>
-			<artifactId>org.apache.commons.lang</artifactId>
-			<version>2.5.0</version>
+			<groupId>org.apache.commons</groupId>
+			<artifactId>commons-lang3</artifactId>
+			<version>3.12.0</version>
 		</dependency>
 
 		<!--fastjson-->
@@ -118,9 +118,16 @@
 			<artifactId>spring-boot-starter-aop</artifactId>
 		</dependency>
 
+		<!--redis-->
 		<dependency>
 			<groupId>org.springframework.boot</groupId>
 			<artifactId>spring-boot-starter-data-redis</artifactId>
+		</dependency>
+
+		<!--spring cache-->
+		<dependency>
+			<groupId>org.springframework.boot</groupId>
+			<artifactId>spring-boot-starter-cache</artifactId>
 		</dependency>
 	</dependencies>
 

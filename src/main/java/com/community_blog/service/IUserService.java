@@ -3,6 +3,7 @@ package com.community_blog.service;
 import com.community_blog.domain.User;
 import com.baomidou.mybatisplus.extension.service.IService;
 
+import java.io.Serializable;
 import java.util.Map;
 
 /**
@@ -30,4 +31,8 @@ public interface IUserService extends IService<User> {
     Map<String, String> register(User user);
 
     User getUserByUsername(String username);
+
+    User getById(Serializable userId);
+
+//    int updateById(User user);
 }
