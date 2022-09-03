@@ -3,6 +3,7 @@ package com.community_blog.controller;
 
 import com.alibaba.fastjson.JSON;
 import com.baomidou.mybatisplus.core.conditions.query.LambdaQueryWrapper;
+import com.community_blog.domain.Event;
 import com.community_blog.dto.CommentDto;
 import com.community_blog.dto.DiscussPostDto;
 import com.community_blog.annotation.LoginRequired;
@@ -10,6 +11,7 @@ import com.community_blog.common.Result;
 import com.community_blog.domain.Comment;
 import com.community_blog.domain.DiscussPost;
 import com.community_blog.domain.User;
+import com.community_blog.event.EventProducer;
 import com.community_blog.service.ICommentService;
 import com.community_blog.service.IDiscussPostService;
 import com.community_blog.service.IUserService;
@@ -27,8 +29,7 @@ import java.util.*;
 
 import com.community_blog.common.MyPage;
 
-import static com.community_blog.util.CommunityConstant.ENTITY_TYPE_COMMENT;
-import static com.community_blog.util.CommunityConstant.ENTITY_TYPE_POST;
+import static com.community_blog.util.CommunityConstant.*;
 
 /**
  * <p>
@@ -80,6 +81,9 @@ public class DiscussPostController {
 
     @Autowired
     private ICommentService commentService;
+
+    @Autowired
+    private EventProducer eventProducer;
 
     /**
      * 分页查询帖子表和用户信息，并将数据发回给前端
@@ -259,7 +263,7 @@ public class DiscussPostController {
      */
     @PostMapping("/like")
     @ResponseBody
-    public String like(int entityType, int entityId, int entityUserId) {
+    public String like(int entityType, int entityId, int entityUserId, int postId) {
         //获取登录用户
         User user = hostHolder.getUser();
         int userId = user.getId();
@@ -272,6 +276,18 @@ public class DiscussPostController {
 
         //查询用户点赞状态
         int likeStatus = discussPostService.findEntityLikeStatus(userId, entityType, entityId);
+
+        // 触发点赞事件
+        if (likeStatus == 1) {
+            Event event = new Event()
+                    .setTopic(TOPIC_LIKE)
+                    .setUserId(hostHolder.getUser().getId())
+                    .setEntityType(entityType)
+                    .setEntityId(entityId)
+                    .setEntityUserId(entityUserId)
+                    .setData("postId", postId);
+            eventProducer.fireEvent(event);
+        }
 
         //返回数据给前端
         Map<String, Object> map = new HashMap<>();
