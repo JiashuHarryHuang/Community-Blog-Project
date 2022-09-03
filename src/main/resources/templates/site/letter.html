@@ -23,13 +23,13 @@
 					<ul class="nav nav-tabs mb-3">
 						<li class="nav-item">
 							<a class="nav-link position-relative active" th:href="@{/message/page}">
-								朋友私信<span class="badge badge-danger" th:text="${unreadMesageCount}"
-										  th:if="${unreadMesageCount!=0}">3</span>
+								朋友私信<span class="badge badge-danger" th:text="${unreadMessageCount}"
+										  th:if="${unreadMessageCount!=0}">3</span>
 							</a>
 						</li>
 						<li class="nav-item">
-							<a class="nav-link position-relative" href="notice.html">
-								系统通知<span class="badge badge-danger">27</span>
+							<a class="nav-link position-relative" th:href="@{/message/notice}">
+								系统通知<span class="badge badge-danger" th:text="${unreadNoticeCount}" th:if="${noticeUnreadCount!=0}">27</span>
 							</a>
 						</li>
 					</ul>

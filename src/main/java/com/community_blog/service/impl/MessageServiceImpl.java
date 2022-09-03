@@ -83,4 +83,16 @@ public class MessageServiceImpl extends ServiceImpl<MessageDao, Message> impleme
         messages.forEach(message -> message.setStatus(1));
         this.updateBatchById(messages);
     }
+
+    public Message selectLatestNotice(int userId, String topic) {
+        return messageDao.selectLatestNotice(userId, topic);
+    }
+
+    public int selectNoticeCount(int userId, String topic) {
+        return messageDao.selectNoticeCount(userId, topic);
+    }
+
+    public int selectNoticeUnreadCount(int userId, String topic) {
+        return messageDao.selectNoticeUnreadCount(userId, topic);
+    }
 }

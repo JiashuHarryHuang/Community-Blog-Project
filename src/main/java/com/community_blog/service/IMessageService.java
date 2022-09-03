@@ -49,4 +49,10 @@ public interface IMessageService extends IService<Message> {
      * @param messages 需要更新的消息集合
      */
     void readMessages(List<Message> messages);
+
+    Message selectLatestNotice(int userId, String topic);
+
+    int selectNoticeCount(int userId, String topic);
+
+    int selectNoticeUnreadCount(int userId, String topic);
 }
