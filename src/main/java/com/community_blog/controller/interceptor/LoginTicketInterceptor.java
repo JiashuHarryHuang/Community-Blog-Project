@@ -48,11 +48,7 @@ public class LoginTicketInterceptor implements HandlerInterceptor {
             LoginTicket loginTicket = (LoginTicket) redisTemplate.opsForValue().get(ticketKey);
             // 检查凭证是否有效
             if (loginTicket != null && loginTicket.getStatus() == 0 && loginTicket.getExpired().isAfter(LocalDateTime.now())) {
-                // 根据凭证查询用户: select * from user where id = {loginTicket.getUserId()}
-                LambdaQueryWrapper<User> userLambdaQueryWrapper = new LambdaQueryWrapper<User>();
-                userLambdaQueryWrapper.eq(User::getId, loginTicket.getUserId());
-                User user = userService.getOne(userLambdaQueryWrapper);
-
+                User user = userService.getById(loginTicket.getUserId());
                 // 将当前用户信息存入ThreadLocal
                 hostHolder.setUser(user);
             }
