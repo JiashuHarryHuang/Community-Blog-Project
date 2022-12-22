@@ -7,6 +7,7 @@ import com.community_blog.domain.LoginTicket;
 import com.community_blog.domain.User;
 import com.community_blog.service.ILoginTicketService;
 import com.community_blog.service.IUserService;
+import com.community_blog.util.CookieUtil;
 import com.community_blog.util.RedisKeyUtil;
 import com.google.code.kaptcha.Producer;
 import lombok.extern.slf4j.Slf4j;
@@ -119,12 +120,7 @@ public class LoginTicketController {
         log.info("登录操作");
 
         //从cookie里获取tempKey
-        String tempKey = "";
-        for (Cookie cookie : request.getCookies()) {
-            if ("tempKey".equals(cookie.getName())) {
-                tempKey = cookie.getValue();
-            }
-        }
+        String tempKey = CookieUtil.getValue(request, "tempKey");
 
         //数据回显
         model.addAttribute("user", userDto);
@@ -149,7 +145,7 @@ public class LoginTicketController {
         //验证验证码
         //String code = (String) session.getAttribute("code");
         String code = null;
-        if (StringUtils.isNotBlank(tempKey)) {
+        if (tempKey != null) {
             String verifyCodeKey = RedisKeyUtil.getKaptchaKey(tempKey);
             code = (String) redisTemplate.opsForValue().get(verifyCodeKey);
         }
