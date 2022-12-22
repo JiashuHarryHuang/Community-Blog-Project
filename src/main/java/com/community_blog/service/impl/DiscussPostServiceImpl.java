@@ -14,6 +14,7 @@ import org.springframework.data.redis.core.RedisOperations;
 import org.springframework.data.redis.core.RedisTemplate;
 import org.springframework.data.redis.core.SessionCallback;
 import org.springframework.stereotype.Service;
+import org.springframework.transaction.annotation.Transactional;
 
 import static com.community_blog.util.CommunityConstant.ENTITY_TYPE_POST;
 
@@ -41,6 +42,7 @@ public class DiscussPostServiceImpl extends ServiceImpl<DiscussPostDao, DiscussP
      * @param entityUserId 发布帖子/评论的用户id
      */
     @Override
+    @Transactional
     public void like(int userId, int entityType, int entityId, int entityUserId) {
         redisTemplate.execute(new SessionCallback() {
             @Override
