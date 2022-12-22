@@ -112,8 +112,7 @@ public class SensitiveFilter {
                 if (cur.isKeywordEnd()) { //当前子串是敏感词
                     //敏感词打码并让slow去找fast然后一起更新
                     resultStr.append(REPLACEMENT);
-                    slow = fast;
-                    ++slow;
+                    slow = fast + 1;
                     cur = root;
                 }
             }

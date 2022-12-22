@@ -41,7 +41,7 @@ public class Comment implements Serializable {
 
     /**
      * 评论评论的时候是回复具体哪个目标
-     * 0-评论的是帖子
+     * 0-评论的是帖子，其他-评论的用户的id
      */
     private Integer targetId;
 
