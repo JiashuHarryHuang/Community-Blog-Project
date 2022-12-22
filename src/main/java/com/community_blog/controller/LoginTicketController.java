@@ -19,6 +19,7 @@ import org.springframework.web.bind.annotation.*;
 
 import javax.imageio.ImageIO;
 import javax.servlet.http.Cookie;
+import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 import javax.servlet.http.HttpSession;
 import java.awt.image.BufferedImage;
@@ -114,9 +115,16 @@ public class LoginTicketController {
      * @return 登录成功/失败页面
      */
     @PostMapping("/login")
-    public String login(Model model, UserDto userDto, HttpServletResponse response,
-                        @CookieValue("tempKey") String tempKey) {
+    public String login(Model model, UserDto userDto, HttpServletResponse response, HttpServletRequest request) {
         log.info("登录操作");
+
+        //从cookie里获取tempKey
+        String tempKey = "";
+        for (Cookie cookie : request.getCookies()) {
+            if ("tempKey".equals(cookie.getName())) {
+                tempKey = cookie.getValue();
+            }
+        }
 
         //数据回显
         model.addAttribute("user", userDto);
