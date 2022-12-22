@@ -14,7 +14,7 @@
 	<name>community_blog</name>
 	<description>community_blog</description>
 	<properties>
-		<java.version>18</java.version>
+		<java.version>17</java.version>
 	</properties>
 	<dependencies>
 		<!--spring web-->
@@ -109,7 +109,7 @@
 		<dependency>
 			<groupId>com.alibaba</groupId>
 			<artifactId>fastjson</artifactId>
-			<version>1.2.76</version>
+			<version>1.2.83</version>
 		</dependency>
 
 		<!--AOP-->
