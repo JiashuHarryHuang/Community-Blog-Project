@@ -42,7 +42,6 @@ public class DiscussPostServiceImpl extends ServiceImpl<DiscussPostDao, DiscussP
      * @param entityUserId 发布帖子/评论的用户id
      */
     @Override
-    @Transactional
     public void like(int userId, int entityType, int entityId, int entityUserId) {
         redisTemplate.execute(new SessionCallback() {
             @Override
