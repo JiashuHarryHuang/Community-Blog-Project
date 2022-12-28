@@ -36,7 +36,7 @@ spring:
 community:
   path:
     domain: http://localhost:8080
-    img: D:/Harry/Dark-Horse/Projects/community_blog/img
+    img: /Users/jiashuhuang/Documents/Dark-Horse/Projects/community_blog/img
     postPage: /discussPost/index
     commentPage: /discussPost/detail/
     messagePage: /message/page
