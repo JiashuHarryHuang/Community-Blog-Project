@@ -65,13 +65,13 @@ public class CommentController {
 //                .setEntityType(comment.getEntityType())
 //                .setEntityId(comment.getEntityId())
 //                .setData("postId", postId);
-        if (comment.getEntityType() == ENTITY_TYPE_POST) {
-            DiscussPost target = discussPostService.getById(comment.getEntityId());
+//        if (comment.getEntityType() == ENTITY_TYPE_POST) {
+//            DiscussPost target = discussPostService.getById(comment.getEntityId());
 //            event.setEntityUserId(target.getUserId());
-        } else if (comment.getEntityType() == ENTITY_TYPE_COMMENT) {
-            Comment target = commentService.getById(comment.getEntityId());
+//        } else if (comment.getEntityType() == ENTITY_TYPE_COMMENT) {
+//            Comment target = commentService.getById(comment.getEntityId());
 //            event.setEntityUserId(target.getUserId());
-        }
+//        }
         commentService.addComment(comment);
 //        eventProducer.fireEvent(event);
 

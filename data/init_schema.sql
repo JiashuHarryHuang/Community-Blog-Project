@@ -29,7 +29,7 @@ CREATE TABLE `comment` (
   `entity_id` int(11) DEFAULT NULL,
   `target_id` int(11) DEFAULT NULL,
   `content` text,
-  `status` int(11) DEFAULT NULL,
+  `status` int(11) DEFAULT 0,
   `create_time` timestamp NULL DEFAULT NULL,
   PRIMARY KEY (`id`),
   KEY `index_user_id` (`user_id`) /*!80000 INVISIBLE */,
