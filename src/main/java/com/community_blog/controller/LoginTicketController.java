@@ -26,6 +26,7 @@ import javax.servlet.http.HttpSession;
 import java.awt.image.BufferedImage;
 import java.io.IOException;
 import java.io.OutputStream;
+import java.time.Duration;
 import java.time.LocalDateTime;
 import java.util.Map;
 import java.util.UUID;
@@ -169,7 +170,7 @@ public class LoginTicketController {
 
         //登录凭证存入redis
         String ticketKey = RedisKeyUtil.getTicketKey(loginTicket.getTicket());
-        redisTemplate.opsForValue().set(ticketKey, loginTicket);
+        redisTemplate.opsForValue().set(ticketKey, loginTicket, Duration.ofHours(1));
 
         //生成cookie
         Cookie cookie = new Cookie("ticket", loginTicket.getTicket());
