@@ -3,11 +3,14 @@ package com.community_blog.controller.interceptor;
 import com.baomidou.mybatisplus.core.conditions.query.LambdaQueryWrapper;
 import com.community_blog.domain.LoginTicket;
 import com.community_blog.domain.User;
+import com.community_blog.dto.UserDto;
 import com.community_blog.service.ILoginTicketService;
+import com.community_blog.service.IMessageService;
 import com.community_blog.service.IUserService;
 import com.community_blog.util.CookieUtil;
 import com.community_blog.util.HostHolder;
 import com.community_blog.util.RedisKeyUtil;
+import org.springframework.beans.BeanUtils;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.data.redis.core.RedisTemplate;
 import org.springframework.stereotype.Component;
@@ -29,6 +32,9 @@ public class LoginTicketInterceptor implements HandlerInterceptor {
     @Autowired
     private HostHolder hostHolder;
 
+    @Autowired
+    private IMessageService messageService;
+
     /**
      * 验证用户是否持有登录凭证，如果有，则将用户对象加入ThreadLocal
      * @param request 请求
@@ -49,8 +55,13 @@ public class LoginTicketInterceptor implements HandlerInterceptor {
             // 检查凭证是否有效
             if (loginTicket != null && loginTicket.getStatus() == 0 && loginTicket.getExpired().isAfter(LocalDateTime.now())) {
                 User user = userService.getById(loginTicket.getUserId());
+                UserDto userDto = new UserDto();
+                BeanUtils.copyProperties(user, userDto);
+
+                int unreadMesageCount = messageService.selectUnreadMessageTotalCount(userDto.getId());
+                userDto.setUnreadMessageCount(unreadMesageCount);
                 // 将当前用户信息存入ThreadLocal
-                hostHolder.setUser(user);
+                hostHolder.setUser(userDto);
             }
         }
 

@@ -57,6 +57,13 @@ public interface MessageDao extends BaseMapper<Message> {
      */
     int selectUnreadMessageCount(int userId, String conversationId);
 
+    /**
+     * 查询一个用户所有的未读消息数量
+     * @param userId 用户id
+     * @return 一个用户所有的未读消息数量
+     */
+    int selectUnreadMessageTotalCount(int userId);
+
     // 查询某个主题下最新的通知
     Message selectLatestNotice(int userId, String topic);
 

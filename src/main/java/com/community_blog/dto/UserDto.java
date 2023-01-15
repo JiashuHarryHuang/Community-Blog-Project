@@ -19,4 +19,9 @@ public class UserDto extends User {
      * 记住我
      */
     private boolean rememberme;
+
+    /**
+     * 未读消息数量
+     */
+    private int unreadMessageCount;
 }

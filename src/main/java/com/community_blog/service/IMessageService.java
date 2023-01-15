@@ -45,6 +45,13 @@ public interface IMessageService extends IService<Message> {
     int selectUnreadMessageCount(int userId, String conversationId);
 
     /**
+     * 查询一个用户所有的未读消息数量
+     * @param userId 用户id
+     * @return 一个用户所有的未读消息数量
+     */
+    int selectUnreadMessageTotalCount(int userId);
+
+    /**
      * 更新消息状态为已读
      * @param messages 需要更新的消息集合
      */

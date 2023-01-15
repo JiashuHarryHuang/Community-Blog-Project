@@ -74,6 +74,11 @@ public class MessageServiceImpl extends ServiceImpl<MessageDao, Message> impleme
         return messageDao.selectUnreadMessageCount(userId, conversationId);
     }
 
+    @Override
+    public int selectUnreadMessageTotalCount(int userId) {
+        return messageDao.selectUnreadMessageTotalCount(userId);
+    }
+
     /**
      * 更新消息状态为已读
      * @param messages 需要更新的消息集合
