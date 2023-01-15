@@ -90,7 +90,7 @@ CREATE TABLE `message` (
   `to_id` int(11) DEFAULT NULL,
   `conversation_id` varchar(45) NOT NULL,
   `content` text,
-  `status` int(11) DEFAULT NULL COMMENT '0-未读;1-已读;2-删除;',
+  `status` int(11) DEFAULT 0 COMMENT '0-未读;1-已读;2-删除;',
   `create_time` timestamp NULL DEFAULT NULL,
   PRIMARY KEY (`id`),
   KEY `index_from_id` (`from_id`),
