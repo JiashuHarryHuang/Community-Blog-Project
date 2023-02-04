@@ -11,7 +11,7 @@ import com.community_blog.common.Result;
 import com.community_blog.domain.Comment;
 import com.community_blog.domain.DiscussPost;
 import com.community_blog.domain.User;
-//import com.community_blog.event.EventProducer;
+import com.community_blog.event.EventProducer;
 import com.community_blog.service.ICommentService;
 import com.community_blog.service.IDiscussPostService;
 import com.community_blog.service.IUserService;
@@ -82,8 +82,8 @@ public class DiscussPostController {
     @Autowired
     private ICommentService commentService;
 
-//    @Autowired
-//    private EventProducer eventProducer;
+    @Autowired
+    private EventProducer eventProducer;
 
     /**
      * 分页查询帖子表和用户信息，并将数据发回给前端
@@ -278,16 +278,16 @@ public class DiscussPostController {
         int likeStatus = discussPostService.findEntityLikeStatus(userId, entityType, entityId);
 
         // 触发点赞事件
-//        if (likeStatus == 1) {
-//            Event event = new Event()
-//                    .setTopic(TOPIC_LIKE)
-//                    .setUserId(hostHolder.getUser().getId())
-//                    .setEntityType(entityType)
-//                    .setEntityId(entityId)
-//                    .setEntityUserId(entityUserId)
-//                    .setData("postId", postId);
-//            eventProducer.fireEvent(event);
-//        }
+        if (likeStatus == 1) {
+            Event event = new Event()
+                    .setTopic(TOPIC_LIKE)
+                    .setUserId(hostHolder.getUser().getId())
+                    .setEntityType(entityType)
+                    .setEntityId(entityId)
+                    .setEntityUserId(entityUserId)
+                    .setData("postId", postId);
+            eventProducer.fireEvent(event);
+        }
 
         //返回数据给前端
         Map<String, Object> map = new HashMap<>();

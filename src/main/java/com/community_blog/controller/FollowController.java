@@ -4,7 +4,7 @@ import com.alibaba.fastjson.JSON;
 import com.community_blog.common.Result;
 import com.community_blog.domain.Event;
 import com.community_blog.domain.User;
-//import com.community_blog.event.EventProducer;
+import com.community_blog.event.EventProducer;
 import com.community_blog.service.IFollowService;
 import com.community_blog.util.HostHolder;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -23,7 +23,7 @@ public class FollowController {
     private IFollowService followService;
 
 //    @Autowired
-//    private EventProducer eventProducer;
+    private EventProducer eventProducer;
 
     /**
      * 关注操作
@@ -38,13 +38,13 @@ public class FollowController {
         followService.follow(user.getId(), entityType, entityId);
 
         // 触发关注事件
-//        Event event = new Event()
-//                .setTopic(TOPIC_FOLLOW)
-//                .setUserId(hostHolder.getUser().getId())
-//                .setEntityType(entityType)
-//                .setEntityId(entityId)
-//                .setEntityUserId(entityId);
-//        eventProducer.fireEvent(event);
+        Event event = new Event()
+                .setTopic(TOPIC_FOLLOW)
+                .setUserId(hostHolder.getUser().getId())
+                .setEntityType(entityType)
+                .setEntityId(entityId)
+                .setEntityUserId(entityId);
+        eventProducer.fireEvent(event);
 
         return JSON.toJSONString(Result.success("已关注！"));
     }

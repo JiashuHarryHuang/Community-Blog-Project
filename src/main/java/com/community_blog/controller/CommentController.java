@@ -5,7 +5,7 @@ import com.community_blog.annotation.LoginRequired;
 import com.community_blog.domain.Comment;
 import com.community_blog.domain.DiscussPost;
 import com.community_blog.domain.Event;
-//import com.community_blog.event.EventProducer;
+import com.community_blog.event.EventProducer;
 import com.community_blog.service.ICommentService;
 import com.community_blog.service.IDiscussPostService;
 import com.community_blog.util.HostHolder;
@@ -38,8 +38,8 @@ public class CommentController {
     @Autowired
     private IDiscussPostService discussPostService;
 
-//    @Autowired
-//    private EventProducer eventProducer;
+    @Autowired
+    private EventProducer eventProducer;
 
     @Autowired
     private HostHolder hostHolder;
@@ -59,21 +59,21 @@ public class CommentController {
         comment.setUserId(hostHolder.getUser().getId());
 
         // 触发评论事件
-//        Event event = new Event()
-//                .setTopic(TOPIC_COMMENT)
-//                .setUserId(hostHolder.getUser().getId())
-//                .setEntityType(comment.getEntityType())
-//                .setEntityId(comment.getEntityId())
-//                .setData("postId", postId);
-//        if (comment.getEntityType() == ENTITY_TYPE_POST) {
-//            DiscussPost target = discussPostService.getById(comment.getEntityId());
-//            event.setEntityUserId(target.getUserId());
-//        } else if (comment.getEntityType() == ENTITY_TYPE_COMMENT) {
-//            Comment target = commentService.getById(comment.getEntityId());
-//            event.setEntityUserId(target.getUserId());
-//        }
+        Event event = new Event()
+                .setTopic(TOPIC_COMMENT)
+                .setUserId(hostHolder.getUser().getId())
+                .setEntityType(comment.getEntityType())
+                .setEntityId(comment.getEntityId())
+                .setData("postId", postId);
+        if (comment.getEntityType() == ENTITY_TYPE_POST) {
+            DiscussPost target = discussPostService.getById(comment.getEntityId());
+            event.setEntityUserId(target.getUserId());
+        } else if (comment.getEntityType() == ENTITY_TYPE_COMMENT) {
+            Comment target = commentService.getById(comment.getEntityId());
+            event.setEntityUserId(target.getUserId());
+        }
         commentService.addComment(comment);
-//        eventProducer.fireEvent(event);
+        eventProducer.fireEvent(event);
 
         return "redirect:/discussPost/detail/" + postId + "?current=" + current;
     }
